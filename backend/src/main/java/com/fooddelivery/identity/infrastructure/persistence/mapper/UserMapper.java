@@ -7,16 +7,14 @@ import com.fooddelivery.identity.infrastructure.persistence.entity.RoleJpaEntity
 import com.fooddelivery.identity.infrastructure.persistence.entity.UserJpaEntity;
 import org.springframework.stereotype.Component;
 
-import java.util.Set;
-import java.util.stream.Collectors;
-
 @Component
 public class UserMapper {
 
     public User toDomain(UserJpaEntity entity) {
-        Set<Role> roles = entity.getRoles().stream()
-                .map(r -> new Role(r.getId(), r.getName()))
-                .collect(Collectors.toSet());
+        RoleJpaEntity roleEntity = entity.getRole();
+        Role role = roleEntity != null
+                ? new Role(roleEntity.getId(), roleEntity.getName())
+                : null;
 
         return new User(
                 entity.getId(),
@@ -26,7 +24,7 @@ public class UserMapper {
                 entity.getLastName(),
                 entity.getAvatarUrl(),
                 entity.getCreatedAt(),
-                roles
+                role
         );
     }
 
@@ -40,10 +38,9 @@ public class UserMapper {
         entity.setAvatarUrl(domain.getAvatarUrl());
         entity.setCreatedAt(domain.getCreatedAt());
 
-        Set<RoleJpaEntity> roleEntities = domain.getRoles().stream()
-                .map(r -> new RoleJpaEntity(r.getId(), r.getName()))
-                .collect(Collectors.toSet());
-        entity.setRoles(roleEntities);
+        if (domain.getRole() != null) {
+            entity.setRole(new RoleJpaEntity(domain.getRole().getId(), domain.getRole().getName()));
+        }
 
         return entity;
     }
