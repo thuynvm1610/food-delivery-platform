@@ -1,9 +1,7 @@
 package com.fooddelivery.identity.infrastructure.persistence.adapter;
 
-import com.fooddelivery.identity.domain.aggregate.User;
 import com.fooddelivery.identity.domain.entity.Role;
 import com.fooddelivery.identity.domain.repository.RoleRepository;
-import com.fooddelivery.identity.infrastructure.persistence.entity.RoleJpaEntity;
 import com.fooddelivery.identity.infrastructure.persistence.repository.SpringDataRoleJpaRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;

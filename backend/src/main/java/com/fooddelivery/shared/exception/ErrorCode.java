@@ -14,6 +14,8 @@ public enum ErrorCode {
     EMAIL_ALREADY_EXISTS("IDT_001", "Email already exists"),
     INVALID_CREDENTIALS("IDT_002", "Invalid email or password"),
     ROLE_NOT_FOUND("IDT_003", "Role not found"),
+    INVALID_REFRESH_TOKEN("IDT_004", "Refresh token is invalid or expired"),
+    REDIS_UNAVAILABLE("IDT_005", "Redis is unavailable. Start Redis before login/refresh"),
 
     // Domain specific errors
     RESTAURANT_CLOSED("REST_001", "Restaurant is currently closed"),

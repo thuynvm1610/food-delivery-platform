@@ -46,7 +46,7 @@ public class RegisterUseCaseImpl implements RegisterUseCase {
                 input.getFirstName(),
                 input.getLastName()
         );
-        user.addRole(role);
+        user.assignRole(role);
 
         // 4. Persist via domain repository (Port)
         User saved = userRepository.save(user);

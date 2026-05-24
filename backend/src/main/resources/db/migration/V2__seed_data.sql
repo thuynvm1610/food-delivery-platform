@@ -36,6 +36,7 @@ INSERT INTO
         first_name,
         last_name,
         avatar_url,
+        role_id,
         created_at
     )
 VALUES
@@ -43,108 +44,79 @@ VALUES
     (
         'bbbbbbbb-0000-0000-0000-000000000001',
         'admin@foodapp.vn',
-        '$2b$12$admin_hash_placeholder',
+        '$2a$10$j.bExEmMlRY8vda8z14lj.9C/Ey11YU2gOKq1QjJ9oZ/BR733/naq',
         NULL,
         NULL,
         NULL,
+        'aaaaaaaa-0000-0000-0000-000000000004',
         '2025-01-01 00:00:00'
     ),
     -- Customers
     (
         'bbbbbbbb-0000-0000-0000-000000000002',
         'customer1@gmail.com',
-        '$2b$12$customer1_hash_placeholder',
+        '$2a$10$j.bExEmMlRY8vda8z14lj.9C/Ey11YU2gOKq1QjJ9oZ/BR733/naq',
         'Nguyễn',
         'Văn An',
         'https://cdn.foodapp.vn/avatars/c1.jpg',
+        'aaaaaaaa-0000-0000-0000-000000000001',
         '2025-01-02 08:00:00'
     ),
     (
         'bbbbbbbb-0000-0000-0000-000000000003',
         'customer2@gmail.com',
-        '$2b$12$customer2_hash_placeholder',
+        '$2a$10$j.bExEmMlRY8vda8z14lj.9C/Ey11YU2gOKq1QjJ9oZ/BR733/naq',
         'Trần',
         'Thị Bình',
         'https://cdn.foodapp.vn/avatars/c2.jpg',
+        'aaaaaaaa-0000-0000-0000-000000000001',
         '2025-01-03 09:00:00'
     ),
     -- Drivers
     (
         'bbbbbbbb-0000-0000-0000-000000000004',
         'driver1@gmail.com',
-        '$2b$12$driver1_hash_placeholder',
+        '$2a$10$j.bExEmMlRY8vda8z14lj.9C/Ey11YU2gOKq1QjJ9oZ/BR733/naq',
         'Lê',
         'Văn Cường',
         'https://cdn.foodapp.vn/avatars/d1.jpg',
+        'aaaaaaaa-0000-0000-0000-000000000002',
         '2025-01-04 07:00:00'
     ),
     (
         'bbbbbbbb-0000-0000-0000-000000000005',
         'driver2@gmail.com',
-        '$2b$12$driver2_hash_placeholder',
+        '$2a$10$j.bExEmMlRY8vda8z14lj.9C/Ey11YU2gOKq1QjJ9oZ/BR733/naq',
         'Phạm',
         'Minh Đức',
         'https://cdn.foodapp.vn/avatars/d2.jpg',
+        'aaaaaaaa-0000-0000-0000-000000000002',
         '2025-01-05 07:00:00'
     ),
     -- Restaurant owners (first_name/last_name nullable)
     (
         'bbbbbbbb-0000-0000-0000-000000000006',
         'resto1@foodapp.vn',
-        '$2b$12$resto1_hash_placeholder',
+        '$2a$10$j.bExEmMlRY8vda8z14lj.9C/Ey11YU2gOKq1QjJ9oZ/BR733/naq',
         NULL,
         NULL,
         NULL,
+        'aaaaaaaa-0000-0000-0000-000000000003',
         '2025-01-06 06:00:00'
     ),
     (
         'bbbbbbbb-0000-0000-0000-000000000007',
         'resto2@foodapp.vn',
-        '$2b$12$resto2_hash_placeholder',
+        '$2a$10$j.bExEmMlRY8vda8z14lj.9C/Ey11YU2gOKq1QjJ9oZ/BR733/naq',
         NULL,
         NULL,
         NULL,
+        'aaaaaaaa-0000-0000-0000-000000000003',
         '2025-01-07 06:00:00'
     );
 
 -- =========================================================================
--- 3. USER_ROLES
--- =========================================================================
-INSERT INTO
-    user_roles (user_id, role_id)
-VALUES
-    (
-        'bbbbbbbb-0000-0000-0000-000000000001',
-        'aaaaaaaa-0000-0000-0000-000000000004'
-    ), -- Admin
-    (
-        'bbbbbbbb-0000-0000-0000-000000000002',
-        'aaaaaaaa-0000-0000-0000-000000000001'
-    ), -- Customer_1
-    (
-        'bbbbbbbb-0000-0000-0000-000000000003',
-        'aaaaaaaa-0000-0000-0000-000000000001'
-    ), -- Customer_2
-    (
-        'bbbbbbbb-0000-0000-0000-000000000004',
-        'aaaaaaaa-0000-0000-0000-000000000002'
-    ), -- Driver_1
-    (
-        'bbbbbbbb-0000-0000-0000-000000000005',
-        'aaaaaaaa-0000-0000-0000-000000000002'
-    ), -- Driver_2
-    (
-        'bbbbbbbb-0000-0000-0000-000000000006',
-        'aaaaaaaa-0000-0000-0000-000000000003'
-    ), -- Restaurant_User1
-    (
-        'bbbbbbbb-0000-0000-0000-000000000007',
-        'aaaaaaaa-0000-0000-0000-000000000003'
-    );
-
--- Restaurant_User2
--- =========================================================================
--- 4. CUSTOMER_PROFILES
+-- 3. CUSTOMER_PROFILES
 -- =========================================================================
 INSERT INTO
     customer_profiles (user_id, default_address, loyalty_points)

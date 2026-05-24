@@ -5,6 +5,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 
 @Entity
@@ -19,6 +21,9 @@ public class RoleJpaEntity {
 
     @Column(nullable = false, unique = true, length = 50)
     private String name;
+
+    @OneToMany(mappedBy = "role")
+    private Set<UserJpaEntity> users = new HashSet<>();
 
     public RoleJpaEntity(UUID id, String name) {
         this.id = id;

@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 
 import javax.crypto.SecretKey;
 import java.util.Date;
-import java.util.Set;
+import java.util.UUID;
 
 @Service
 public class JwtService {
@@ -17,26 +17,30 @@ public class JwtService {
     @Value("${app.jwt.secret}")
     private String secret;
 
-    @Value("${app.jwt.expiration-ms}")
-    private long expirationMs;
+    @Value("${app.jwt.access-expiration-ms}")
+    private long accessExpirationMs;
 
     private SecretKey getSigningKey() {
         byte[] keyBytes = Decoders.BASE64.decode(secret);
         return Keys.hmacShaKeyFor(keyBytes);
     }
 
-    public String generateToken(String userId, Set<String> roles) {
+    public String generateAccessToken(UUID userId, String role) {
         return Jwts.builder()
-                .subject(userId)
-                .claim("roles", roles)
+                .subject(userId.toString())
+                .claim("role", role)
                 .issuedAt(new Date())
-                .expiration(new Date(System.currentTimeMillis() + expirationMs))
-                .signWith(getSigningKey())
+                .expiration(new Date(System.currentTimeMillis() + accessExpirationMs))
+                .signWith(getSigningKey(), Jwts.SIG.HS256)
                 .compact();
     }
 
-    public String extractUserId(String token) {
-        return parseClaims(token).getSubject();
+    public UUID extractUserId(String token) {
+        return UUID.fromString(parseClaims(token).getSubject());
+    }
+
+    public String extractRole(String token) {
+        return parseClaims(token).get("role", String.class);
     }
 
     public boolean isTokenValid(String token) {

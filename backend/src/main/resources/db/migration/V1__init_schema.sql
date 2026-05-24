@@ -2,6 +2,11 @@
 -- IDENTITY CONTEXT
 -- =========================================================================
 
+CREATE TABLE roles (
+    id UUID PRIMARY KEY,
+    name VARCHAR(50) NOT NULL UNIQUE -- ROLE_CUSTOMER, ROLE_RESTAURANT, ROLE_DRIVER, ROLE_ADMIN
+);
+
 CREATE TABLE users (
     id UUID PRIMARY KEY,
     email VARCHAR(255) NOT NULL UNIQUE,
@@ -9,19 +14,8 @@ CREATE TABLE users (
     first_name VARCHAR(100), -- Nullable for Restaurant/Admin
     last_name VARCHAR(100),  -- Nullable for Restaurant/Admin
     avatar_url VARCHAR(500), -- Mostly used for Driver/Customer
-    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
-);
-
-CREATE TABLE roles (
-    id UUID PRIMARY KEY,
-    name VARCHAR(50) NOT NULL UNIQUE -- ROLE_CUSTOMER, ROLE_RESTAURANT, ROLE_DRIVER, ROLE_ADMIN
-);
-
-CREATE TABLE user_roles (
-    user_id UUID NOT NULL,
     role_id UUID NOT NULL,
-    PRIMARY KEY (user_id, role_id),
-    FOREIGN KEY (user_id) REFERENCES users(id),
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (role_id) REFERENCES roles(id)
 );
 
