@@ -1,12 +1,20 @@
 import { Navigate, Route, Routes } from 'react-router-dom';
 import PublicLayout from '../layouts/PublicLayout';
 import DashboardLayout from '../layouts/DashboardLayout';
+import { RestaurantLayout } from '../layouts/RestaurantLayout';
 import HomePage from '../pages/public/HomePage';
 import LoginPage from '../pages/auth/LoginPage';
 import CustomerHomePage from '../pages/customer/CustomerHomePage';
 import DriverHomePage from '../pages/driver/DriverHomePage';
-import RestaurantHomePage from '../pages/restaurant/RestaurantHomePage';
 import AdminHomePage from '../pages/admin/AdminHomePage';
+import { RestaurantDashboardHome } from '../pages/restaurant/RestaurantDashboardHome';
+import { RestaurantOrders } from '../pages/restaurant/RestaurantOrders';
+import { RestaurantMenu } from '../pages/restaurant/RestaurantMenu';
+import { RestaurantProfile } from '../pages/restaurant/RestaurantProfile';
+import { RestaurantOperatingHours } from '../pages/restaurant/RestaurantOperatingHours';
+import { RestaurantVouchers } from '../pages/restaurant/RestaurantVouchers';
+import { RestaurantRevenue } from '../pages/restaurant/RestaurantRevenue';
+import { RestaurantReviews } from '../pages/restaurant/RestaurantReviews';
 import ProtectedRoute from './ProtectedRoute';
 import RoleRoute from './RoleRoute';
 
@@ -18,6 +26,7 @@ export default function AppRouter() {
         <Route path="/login" element={<LoginPage />} />
       </Route>
 
+      {/* Customer, Driver, Admin Dashboard */}
       <Route
         element={
           <ProtectedRoute>
@@ -42,14 +51,6 @@ export default function AppRouter() {
           }
         />
         <Route
-          path="/restaurant"
-          element={
-            <RoleRoute allowedRoles={['ROLE_RESTAURANT']}>
-              <RestaurantHomePage />
-            </RoleRoute>
-          }
-        />
-        <Route
           path="/admin"
           element={
             <RoleRoute allowedRoles={['ROLE_ADMIN']}>
@@ -58,6 +59,30 @@ export default function AppRouter() {
           }
         />
       </Route>
+
+      {/* Restaurant Dashboard */}
+      <Route
+        element={
+          <ProtectedRoute>
+            <RoleRoute allowedRoles={['ROLE_RESTAURANT']}>
+              <RestaurantLayout>
+                <Routes>
+                  <Route path="home" element={<RestaurantDashboardHome />} />
+                  <Route path="orders" element={<RestaurantOrders />} />
+                  <Route path="menu" element={<RestaurantMenu />} />
+                  <Route path="profile" element={<RestaurantProfile />} />
+                  <Route path="operating-hours" element={<RestaurantOperatingHours />} />
+                  <Route path="vouchers" element={<RestaurantVouchers />} />
+                  <Route path="revenue" element={<RestaurantRevenue />} />
+                  <Route path="reviews" element={<RestaurantReviews />} />
+                  <Route path="*" element={<Navigate to="home" replace />} />
+                </Routes>
+              </RestaurantLayout>
+            </RoleRoute>
+          </ProtectedRoute>
+        }
+        path="/dashboard/*"
+      />
 
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>

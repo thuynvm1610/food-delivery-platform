@@ -83,9 +83,9 @@ CREATE TABLE
     restaurant_operating_hours (
         id UUID PRIMARY KEY,
         restaurant_id UUID NOT NULL,
-        day_of_week SMALLINT NOT NULL CHECK (day_of_week BETWEEN 2 AND 8),
-        open_hour SMALLINT NOT NULL CHECK (open_hour BETWEEN 0 AND 23),
-        close_hour SMALLINT NOT NULL CHECK (close_hour BETWEEN 0 AND 23),
+        day_of_week INTEGER NOT NULL CHECK (day_of_week BETWEEN 2 AND 8),
+        open_hour INTEGER NOT NULL CHECK (open_hour BETWEEN 0 AND 23),
+        close_hour INTEGER NOT NULL CHECK (close_hour BETWEEN 0 AND 23),
         UNIQUE (restaurant_id, day_of_week),
         FOREIGN KEY (restaurant_id) REFERENCES restaurants (id)
     );
