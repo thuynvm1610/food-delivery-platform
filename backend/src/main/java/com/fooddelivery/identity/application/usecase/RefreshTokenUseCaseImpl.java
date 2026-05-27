@@ -28,14 +28,14 @@ public class RefreshTokenUseCaseImpl implements RefreshTokenUseCase {
                 .orElseThrow(() -> new DomainException(ErrorCode.INVALID_REFRESH_TOKEN));
 
         var roleName = user.getRole().getName();
-        var tokens = authTokenService.rotateRefreshToken(refreshToken, userId, roleName);
+        var accessToken = authTokenService.issueAccessToken(userId, roleName);
 
         return new LoginOutput(
                 user.getId(),
                 user.getEmail().getValue(),
                 roleName,
-                tokens.accessToken(),
-                tokens.refreshToken()
+                accessToken,
+                refreshToken
         );
     }
 }

@@ -1,4 +1,4 @@
-package com.fooddelivery.restaurant.infrastructure.persistence.jpa;
+package com.fooddelivery.restaurant.infrastructure.persistence.entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

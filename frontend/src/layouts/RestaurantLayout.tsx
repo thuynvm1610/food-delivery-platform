@@ -1,6 +1,20 @@
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
+import {
+  IconLayoutDashboard,
+  IconPackage,
+  IconToolsKitchen2,
+  IconBuildingStore,
+  IconClock,
+  IconTicket,
+  IconCoin,
+  IconStar,
+  IconLogout,
+  IconMenu2,
+  IconPizza,
+} from '@tabler/icons-react';
 import { useAuth } from '../context/AuthContext';
+import { useRestaurant } from '../context/RestaurantContext';
 import { RestaurantProvider } from '../context/RestaurantContext';
 import { OrderProvider } from '../context/OrderContext';
 import { MenuProvider } from '../context/MenuContext';
@@ -11,15 +25,48 @@ interface RestaurantLayoutProps {
 }
 
 const navItems = [
-  { path: '/dashboard/home', label: '📊 Tổng quan', icon: '📊' },
-  { path: '/dashboard/orders', label: '📦 Đơn hàng', icon: '📦' },
-  { path: '/dashboard/menu', label: '🍽️ Menu', icon: '🍽️' },
-  { path: '/dashboard/profile', label: '🏪 Hồ sơ', icon: '🏪' },
-  { path: '/dashboard/operating-hours', label: '⏰ Giờ hoạt động', icon: '⏰' },
-  { path: '/dashboard/vouchers', label: '🎟️ Khuyến mãi', icon: '🎟️' },
-  { path: '/dashboard/revenue', label: '💰 Doanh thu', icon: '💰' },
-  { path: '/dashboard/reviews', label: '⭐ Đánh giá', icon: '⭐' },
+  { path: '/dashboard/home', label: 'Tổng quan', Icon: IconLayoutDashboard },
+  { path: '/dashboard/orders', label: 'Đơn hàng', Icon: IconPackage },
+  { path: '/dashboard/menu', label: 'Menu', Icon: IconToolsKitchen2 },
+  { path: '/dashboard/profile', label: 'Hồ sơ', Icon: IconBuildingStore },
+  { path: '/dashboard/operating-hours', label: 'Giờ hoạt động', Icon: IconClock },
+  { path: '/dashboard/vouchers', label: 'Khuyến mãi', Icon: IconTicket },
+  { path: '/dashboard/revenue', label: 'Doanh thu', Icon: IconCoin },
+  { path: '/dashboard/reviews', label: 'Đánh giá', Icon: IconStar },
 ];
+
+const RestaurantTopBar: React.FC = () => {
+  const { restaurant } = useRestaurant();
+
+  return (
+    <div
+      style={{
+        background: '#fff',
+        borderBottom: '1px solid #e5e7eb',
+        padding: '14px 32px',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        flexShrink: 0,
+      }}
+    >
+      <div>
+        <p style={{ fontSize: 12, color: '#9ca3af', margin: '0 0 2px' }}>Xin chào,</p>
+        <h2 style={{ fontSize: 17, fontWeight: 600, color: '#111827', margin: 0 }}>
+          {restaurant?.name || '—'}
+        </h2>
+      </div>
+      <div style={{ textAlign: 'right' }}>
+        <p style={{ fontSize: 13, color: '#6b7280', margin: '0 0 2px' }}>
+          {new Date().toLocaleDateString('vi-VN')}
+        </p>
+        <p style={{ fontSize: 13, color: '#6b7280', margin: 0 }}>
+          {new Date().toLocaleTimeString('vi-VN')}
+        </p>
+      </div>
+    </div>
+  );
+};
 
 export const RestaurantLayout: React.FC<RestaurantLayoutProps> = ({ children }) => {
   const { user, logout } = useAuth();
@@ -31,86 +78,136 @@ export const RestaurantLayout: React.FC<RestaurantLayoutProps> = ({ children }) 
       <OrderProvider>
         <MenuProvider>
           <DashboardProvider>
-            <div className="flex h-screen bg-gray-100">
-              {/* Sidebar */}
+            <div style={{ display: 'flex', height: '100vh', background: '#f3f4f6', overflow: 'hidden' }}>
+
+              {/* ── Sidebar ── */}
               <div
-                className={`${
-                  sidebarOpen ? 'w-64' : 'w-20'
-                } bg-gray-900 text-white transition-all duration-300 flex flex-col overflow-hidden`}
+                style={{
+                  width: sidebarOpen ? 240 : 64,
+                  background: '#111827',
+                  color: '#fff',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  transition: 'width 0.25s ease',
+                  overflow: 'hidden',
+                  flexShrink: 0,
+                }}
               >
-                {/* Logo */}
-                <div className="p-4 border-b border-gray-800 flex items-center justify-between">
-                  {sidebarOpen && <h1 className="font-bold text-xl">🍕 RestaurantHub</h1>}
+                {/* Logo row */}
+                <div
+                  style={{
+                    padding: '16px 12px',
+                    borderBottom: '1px solid #1f2937',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: sidebarOpen ? 'space-between' : 'center',
+                    minHeight: 60,
+                  }}
+                >
+                  {sidebarOpen && (
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                      <IconPizza size={22} strokeWidth={1.75} color="#f97316" />
+                      <span style={{ fontWeight: 700, fontSize: 16, whiteSpace: 'nowrap' }}>RestaurantHub</span>
+                    </div>
+                  )}
                   <button
-                    onClick={() => setSidebarOpen(!sidebarOpen)}
-                    className="p-1 hover:bg-gray-800 rounded"
+                    onClick={() => setSidebarOpen(v => !v)}
+                    style={{
+                      background: 'none',
+                      border: 'none',
+                      color: '#9ca3af',
+                      cursor: 'pointer',
+                      padding: 4,
+                      borderRadius: 6,
+                      display: 'flex',
+                      alignItems: 'center',
+                    }}
+                    aria-label="Toggle sidebar"
                   >
-                    ☰
+                    <IconMenu2 size={20} strokeWidth={1.75} />
                   </button>
                 </div>
 
-                {/* Navigation */}
-                <nav className="flex-1 px-2 py-4 space-y-2 overflow-y-auto">
-                  {navItems.map(item => {
-                    const isActive = location.pathname === item.path;
+                {/* Nav links */}
+                <nav style={{ flex: 1, padding: '12px 8px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: 2 }}>
+                  {navItems.map(({ path, label, Icon }) => {
+                    const isActive = location.pathname === path;
                     return (
                       <Link
-                        key={item.path}
-                        to={item.path}
-                        className={`block px-4 py-3 rounded transition ${
-                          isActive
-                            ? 'bg-blue-600 text-white'
-                            : 'text-gray-300 hover:bg-gray-800'
-                        }`}
-                        title={item.label}
+                        key={path}
+                        to={path}
+                        title={label}
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: 10,
+                          padding: sidebarOpen ? '10px 12px' : '10px 0',
+                          justifyContent: sidebarOpen ? 'flex-start' : 'center',
+                          borderRadius: 8,
+                          textDecoration: 'none',
+                          fontSize: 14,
+                          fontWeight: isActive ? 600 : 400,
+                          background: isActive ? '#2563eb' : 'transparent',
+                          color: isActive ? '#fff' : '#9ca3af',
+                          transition: 'background 0.15s, color 0.15s',
+                          whiteSpace: 'nowrap',
+                          overflow: 'hidden',
+                        }}
+                        onMouseEnter={e => { if (!isActive) (e.currentTarget as HTMLElement).style.background = '#1f2937'; (e.currentTarget as HTMLElement).style.color = '#fff'; }}
+                        onMouseLeave={e => { if (!isActive) { (e.currentTarget as HTMLElement).style.background = 'transparent'; (e.currentTarget as HTMLElement).style.color = '#9ca3af'; } }}
                       >
-                        {sidebarOpen ? (
-                          <span>{item.label}</span>
-                        ) : (
-                          <span className="text-xl">{item.icon}</span>
-                        )}
+                        <Icon size={18} strokeWidth={1.75} style={{ flexShrink: 0 }} />
+                        {sidebarOpen && <span>{label}</span>}
                       </Link>
                     );
                   })}
                 </nav>
 
-                {/* User Profile */}
-                <div className="p-4 border-t border-gray-800">
+                {/* Logout */}
+                <div style={{ padding: '12px 8px', borderTop: '1px solid #1f2937' }}>
                   <button
                     onClick={() => logout()}
-                    className="w-full px-4 py-2 bg-red-600 hover:bg-red-700 rounded font-semibold transition"
+                    style={{
+                      width: '100%',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: sidebarOpen ? 'flex-start' : 'center',
+                      gap: 8,
+                      padding: '10px 12px',
+                      borderRadius: 8,
+                      border: 'none',
+                      background: 'transparent',
+                      color: '#f87171',
+                      cursor: 'pointer',
+                      fontSize: 14,
+                      fontWeight: 500,
+                      transition: 'background 0.15s',
+                    }}
+                    onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = '#1f2937'; }}
+                    onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
                   >
-                    {sidebarOpen ? '🚪 Đăng xuất' : '🚪'}
+                    <IconLogout size={18} strokeWidth={1.75} style={{ flexShrink: 0 }} />
+                    {sidebarOpen && <span>Đăng xuất</span>}
                   </button>
                   {sidebarOpen && (
-                    <p className="text-xs text-gray-400 mt-2 truncate">{user?.email}</p>
+                    <p style={{ fontSize: 11, color: '#6b7280', marginTop: 8, paddingLeft: 12, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                      {user?.email}
+                    </p>
                   )}
                 </div>
               </div>
 
-              {/* Main Content */}
-              <div className="flex-1 flex flex-col overflow-hidden">
-                {/* Top Bar */}
-                <div className="bg-white border-b border-gray-200 px-8 py-4 shadow-sm">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-gray-500 text-sm">Xin chào,</p>
-                      <h2 className="text-xl font-bold text-gray-900">{user?.firstName || user?.email}</h2>
-                    </div>
-                    <div className="flex items-center gap-4">
-                      <div className="text-right">
-                        <p className="text-sm text-gray-500">{new Date().toLocaleDateString('vi-VN')}</p>
-                        <p className="text-sm text-gray-500">{new Date().toLocaleTimeString('vi-VN')}</p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
+              {/* ── Main area ── */}
+              <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden', minWidth: 0 }}>
+                {/* Top bar */}
+                <RestaurantTopBar />
 
-                {/* Content Area */}
-                <div className="flex-1 overflow-auto p-8">
+                {/* Page content */}
+                <div style={{ flex: 1, overflowY: 'auto', padding: '32px' }}>
                   {children}
                 </div>
               </div>
+
             </div>
           </DashboardProvider>
         </MenuProvider>

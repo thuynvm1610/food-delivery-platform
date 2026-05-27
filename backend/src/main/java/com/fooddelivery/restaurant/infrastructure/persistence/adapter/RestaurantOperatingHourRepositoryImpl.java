@@ -2,8 +2,8 @@ package com.fooddelivery.restaurant.infrastructure.persistence.adapter;
 
 import com.fooddelivery.restaurant.domain.entity.RestaurantOperatingHour;
 import com.fooddelivery.restaurant.domain.repository.RestaurantOperatingHourRepository;
-import com.fooddelivery.restaurant.infrastructure.persistence.jpa.RestaurantOperatingHourJpaEntity;
-import com.fooddelivery.restaurant.infrastructure.persistence.jpa.RestaurantOperatingHourJpaRepository;
+import com.fooddelivery.restaurant.infrastructure.persistence.entity.RestaurantOperatingHourJpaEntity;
+import com.fooddelivery.restaurant.infrastructure.persistence.repository.RestaurantOperatingHourJpaRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 

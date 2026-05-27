@@ -78,7 +78,7 @@ public class AuthController {
                 .orElse(null);
 
         var output = refreshTokenUseCase.execute(refreshToken);
-        authCookieService.writeTokenCookies(response, output.getAccessToken(), output.getRefreshToken());
+        authCookieService.writeAccessTokenCookie(response, output.getAccessToken());
 
         return ResponseEntity.ok(BaseResponse.success(
                 new LoginResponse(output.getUserId(), output.getEmail(), output.getRole())

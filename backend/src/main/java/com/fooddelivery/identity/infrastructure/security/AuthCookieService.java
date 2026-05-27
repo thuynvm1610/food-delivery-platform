@@ -33,6 +33,10 @@ public class AuthCookieService {
         response.addHeader(HttpHeaders.SET_COOKIE, buildCookie(REFRESH_TOKEN_COOKIE, refreshToken, Duration.ofDays(refreshExpirationDays)).toString());
     }
 
+    public void writeAccessTokenCookie(HttpServletResponse response, String accessToken) {
+        response.addHeader(HttpHeaders.SET_COOKIE, buildCookie(ACCESS_TOKEN_COOKIE, accessToken, Duration.ofMillis(accessExpirationMs)).toString());
+    }
+
     public void clearTokenCookies(HttpServletResponse response) {
         response.addHeader(HttpHeaders.SET_COOKIE, buildCookie(ACCESS_TOKEN_COOKIE, "", Duration.ZERO).toString());
         response.addHeader(HttpHeaders.SET_COOKIE, buildCookie(REFRESH_TOKEN_COOKIE, "", Duration.ZERO).toString());

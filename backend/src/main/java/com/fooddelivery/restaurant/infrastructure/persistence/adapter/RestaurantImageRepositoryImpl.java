@@ -2,8 +2,8 @@ package com.fooddelivery.restaurant.infrastructure.persistence.adapter;
 
 import com.fooddelivery.restaurant.domain.entity.RestaurantImage;
 import com.fooddelivery.restaurant.domain.repository.RestaurantImageRepository;
-import com.fooddelivery.restaurant.infrastructure.persistence.jpa.RestaurantImageJpaEntity;
-import com.fooddelivery.restaurant.infrastructure.persistence.jpa.RestaurantImageJpaRepository;
+import com.fooddelivery.restaurant.infrastructure.persistence.entity.RestaurantImageJpaEntity;
+import com.fooddelivery.restaurant.infrastructure.persistence.repository.RestaurantImageJpaRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 

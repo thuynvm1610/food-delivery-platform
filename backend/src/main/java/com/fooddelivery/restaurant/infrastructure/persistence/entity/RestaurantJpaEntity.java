@@ -1,4 +1,4 @@
-package com.fooddelivery.restaurant.infrastructure.persistence.jpa;
+package com.fooddelivery.restaurant.infrastructure.persistence.entity;
 
 import com.fooddelivery.restaurant.domain.value.RestaurantStatus;
 import jakarta.persistence.*;

@@ -21,7 +21,7 @@ public class GlobalExceptionHandler {
         ErrorResponse errorResponse = ErrorBuilder.build(ex.getErrorCode());
         HttpStatus status = switch (ex.getErrorCode()) {
             case UNAUTHORIZED, INVALID_CREDENTIALS, INVALID_REFRESH_TOKEN -> HttpStatus.UNAUTHORIZED;
-            case FORBIDDEN -> HttpStatus.FORBIDDEN;
+            case FORBIDDEN, REGISTRATION_ROLE_NOT_ALLOWED -> HttpStatus.FORBIDDEN;
             default -> HttpStatus.BAD_REQUEST;
         };
         return new ResponseEntity<>(errorResponse, status);

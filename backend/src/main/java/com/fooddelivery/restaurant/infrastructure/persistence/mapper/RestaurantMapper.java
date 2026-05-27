@@ -1,9 +1,9 @@
-package com.fooddelivery.restaurant.infrastructure.persistence.adapter;
+package com.fooddelivery.restaurant.infrastructure.persistence.mapper;
 
 import com.fooddelivery.restaurant.domain.aggregate.Restaurant;
 import com.fooddelivery.restaurant.domain.entity.RestaurantImage;
 import com.fooddelivery.restaurant.domain.entity.RestaurantOperatingHour;
-import com.fooddelivery.restaurant.infrastructure.persistence.jpa.*;
+import com.fooddelivery.restaurant.infrastructure.persistence.entity.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -12,7 +12,7 @@ import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
-public class RestaurantPersistenceAdapter {
+public class RestaurantMapper {
 
     public Restaurant toDomain(RestaurantJpaEntity jpaEntity) {
         if (jpaEntity == null) return null;
@@ -58,25 +58,25 @@ public class RestaurantPersistenceAdapter {
         );
     }
 
-    public RestaurantJpaEntity toJpa(Restaurant domain) {
-        if (domain == null) return null;
+    public RestaurantJpaEntity toJpaEntity(Restaurant restaurant) {
+        if (restaurant == null) return null;
 
         RestaurantJpaEntity entity = new RestaurantJpaEntity();
-        entity.setId(domain.getId());
-        entity.setOwnerId(domain.getOwnerId());
-        entity.setName(domain.getName());
-        entity.setDescription(domain.getDescription());
-        entity.setStreetAddress(domain.getStreetAddress());
-        entity.setCity(domain.getCity());
-        entity.setDistrict(domain.getDistrict());
-        entity.setLatitude(domain.getLatitude());
-        entity.setLongitude(domain.getLongitude());
-        entity.setCoverImageUrl(domain.getCoverImageUrl());
-        entity.setStatus(domain.getStatus());
-        entity.setCreatedAt(domain.getCreatedAt());
+        entity.setId(restaurant.getId());
+        entity.setOwnerId(restaurant.getOwnerId());
+        entity.setName(restaurant.getName());
+        entity.setDescription(restaurant.getDescription());
+        entity.setStreetAddress(restaurant.getStreetAddress());
+        entity.setCity(restaurant.getCity());
+        entity.setDistrict(restaurant.getDistrict());
+        entity.setLatitude(restaurant.getLatitude());
+        entity.setLongitude(restaurant.getLongitude());
+        entity.setCoverImageUrl(restaurant.getCoverImageUrl());
+        entity.setStatus(restaurant.getStatus());
+        entity.setCreatedAt(restaurant.getCreatedAt());
 
-        if (domain.getImages() != null) {
-            entity.setImages(domain.getImages().stream()
+        if (restaurant.getImages() != null) {
+            entity.setImages(restaurant.getImages().stream()
                     .map(img -> {
                         RestaurantImageJpaEntity imgEntity = new RestaurantImageJpaEntity();
                         imgEntity.setId(img.getId());
@@ -88,8 +88,8 @@ public class RestaurantPersistenceAdapter {
                     .collect(Collectors.toList()));
         }
 
-        if (domain.getOperatingHours() != null) {
-            entity.setOperatingHours(domain.getOperatingHours().stream()
+        if (restaurant.getOperatingHours() != null) {
+            entity.setOperatingHours(restaurant.getOperatingHours().stream()
                     .map(hour -> {
                         RestaurantOperatingHourJpaEntity hourEntity = new RestaurantOperatingHourJpaEntity();
                         hourEntity.setId(hour.getId());

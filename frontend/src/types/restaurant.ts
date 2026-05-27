@@ -141,6 +141,7 @@ export interface DashboardStats {
   totalOrders: number;
   successfulOrders: number;
   cancelledOrders: number;
+  inProgressOrders: number;
   totalRevenue: number;
   todayRevenue: number;
   monthlyRevenue: number;

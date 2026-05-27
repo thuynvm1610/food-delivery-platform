@@ -7,7 +7,7 @@ export function getHomePathForRole(role: UserRole): string {
     case 'ROLE_DRIVER':
       return '/driver';
     case 'ROLE_RESTAURANT':
-      return '/restaurant';
+      return '/dashboard/home';
     case 'ROLE_ADMIN':
       return '/admin';
     default:

@@ -7,7 +7,9 @@ import com.fooddelivery.shared.domain.AggregateRoot;
 import lombok.Getter;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -26,7 +28,7 @@ public class Restaurant implements AggregateRoot<UUID> {
     private String coverImageUrl;
     private RestaurantStatus status;
     private final LocalDateTime createdAt;
-    private List<RestaurantImage> images;
+    private final List<RestaurantImage> images;
     private List<RestaurantOperatingHour> operatingHours;
 
     // Constructor for creating a brand-new Restaurant
@@ -80,7 +82,29 @@ public class Restaurant implements AggregateRoot<UUID> {
     }
 
     public void setStatus(RestaurantStatus status) {
-        this.status = status;
+        int currentDay = LocalDate.now().getDayOfWeek().getValue() + 1;
+        LocalTime now = LocalTime.now();
+
+        for (int i = operatingHours.size() - 1; i >= 0; i--) {
+
+            RestaurantOperatingHour hour = operatingHours.get(i);
+
+            if (currentDay == hour.getDayOfWeek()) {
+
+                LocalTime openTime = LocalTime.of(hour.getOpenHour(), 0);
+                LocalTime closeTime = LocalTime.of(hour.getCloseHour(), 0);
+
+                boolean isOutsideOperatingHours =
+                        now.isBefore(openTime)
+                                || !now.isBefore(closeTime);
+
+                if (isOutsideOperatingHours) {
+                    this.status = status;
+                }
+
+                return;
+            }
+        }
     }
 
     public void addImage(RestaurantImage image) {

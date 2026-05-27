@@ -2,8 +2,9 @@ package com.fooddelivery.restaurant.infrastructure.persistence.adapter;
 
 import com.fooddelivery.restaurant.domain.aggregate.Restaurant;
 import com.fooddelivery.restaurant.domain.repository.RestaurantRepository;
-import com.fooddelivery.restaurant.infrastructure.persistence.jpa.RestaurantJpaEntity;
-import com.fooddelivery.restaurant.infrastructure.persistence.jpa.RestaurantJpaRepository;
+import com.fooddelivery.restaurant.infrastructure.persistence.entity.RestaurantJpaEntity;
+import com.fooddelivery.restaurant.infrastructure.persistence.repository.RestaurantJpaRepository;
+import com.fooddelivery.restaurant.infrastructure.persistence.mapper.RestaurantMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -14,30 +15,30 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class RestaurantRepositoryImpl implements RestaurantRepository {
 
-    private final RestaurantJpaRepository jpaRepository;
-    private final RestaurantPersistenceAdapter adapter;
+    private final RestaurantJpaRepository restaurantJpaRepository;
+    private final RestaurantMapper restaurantMapper;
 
     @Override
     public Restaurant save(Restaurant restaurant) {
-        RestaurantJpaEntity jpaEntity = adapter.toJpa(restaurant);
-        RestaurantJpaEntity saved = jpaRepository.save(jpaEntity);
-        return adapter.toDomain(saved);
+        RestaurantJpaEntity jpaEntity = restaurantMapper.toJpaEntity(restaurant);
+        RestaurantJpaEntity saved = restaurantJpaRepository.save(jpaEntity);
+        return restaurantMapper.toDomain(saved);
     }
 
     @Override
     public Optional<Restaurant> findById(UUID id) {
-        return jpaRepository.findById(id)
-                .map(adapter::toDomain);
+        return restaurantJpaRepository.findById(id)
+                .map(restaurantMapper::toDomain);
     }
 
     @Override
     public Optional<Restaurant> findByOwnerId(UUID ownerId) {
-        return jpaRepository.findByOwnerId(ownerId)
-                .map(adapter::toDomain);
+        return restaurantJpaRepository.findByOwnerId(ownerId)
+                .map(restaurantMapper::toDomain);
     }
 
     @Override
     public void delete(Restaurant restaurant) {
-        jpaRepository.deleteById(restaurant.getId());
+        restaurantJpaRepository.deleteById(restaurant.getId());
     }
 }

@@ -16,9 +16,11 @@ public enum ErrorCode {
     ROLE_NOT_FOUND("IDT_003", "Role not found"),
     INVALID_REFRESH_TOKEN("IDT_004", "Refresh token is invalid or expired"),
     REDIS_UNAVAILABLE("IDT_005", "Redis is unavailable. Start Redis before login/refresh"),
+    REGISTRATION_ROLE_NOT_ALLOWED("IDT_006", "Only customer, restaurant, and driver roles can register"),
 
     // Domain specific errors
     RESTAURANT_CLOSED("REST_001", "Restaurant is currently closed"),
+    RESTAURANT_NOT_FOUND_BY_OWNER("RES_001", "Restaurant not found for owner"),
     ITEM_OUT_OF_STOCK("ORD_001", "Item is out of stock"),
     INSUFFICIENT_WALLET_BALANCE("WAL_001", "Driver wallet balance is insufficient");
 

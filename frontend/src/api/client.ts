@@ -1,5 +1,6 @@
 import axios, { type AxiosError, type InternalAxiosRequestConfig } from 'axios';
 import type { BaseResponse } from '../types/api';
+import { emitAuthExpired } from './authSessionEvents';
 
 export const apiClient = axios.create({
   baseURL: '/api/v1',
@@ -53,6 +54,7 @@ apiClient.interceptors.response.use(
       return apiClient(originalRequest);
     } catch (refreshError) {
       processRefreshQueue(false);
+      emitAuthExpired();
       return Promise.reject(refreshError);
     } finally {
       isRefreshing = false;

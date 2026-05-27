@@ -19,9 +19,8 @@ public class AuthTokenService {
         return new AuthTokens(accessToken, refreshToken);
     }
 
-    public AuthTokens rotateRefreshToken(String refreshToken, UUID userId, String role) {
-        refreshTokenStore.delete(refreshToken);
-        return issueTokens(userId, role);
+    public String issueAccessToken(UUID userId, String role) {
+        return jwtService.generateAccessToken(userId, role);
     }
 
     public void revokeRefreshToken(String refreshToken) {

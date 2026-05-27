@@ -4,6 +4,7 @@ import DashboardLayout from '../layouts/DashboardLayout';
 import { RestaurantLayout } from '../layouts/RestaurantLayout';
 import HomePage from '../pages/public/HomePage';
 import LoginPage from '../pages/auth/LoginPage';
+import RegisterPage from '../pages/auth/RegisterPage';
 import CustomerHomePage from '../pages/customer/CustomerHomePage';
 import DriverHomePage from '../pages/driver/DriverHomePage';
 import AdminHomePage from '../pages/admin/AdminHomePage';
@@ -22,8 +23,10 @@ export default function AppRouter() {
   return (
     <Routes>
       <Route element={<PublicLayout />}>
-        <Route path="/" element={<HomePage />} />
-        <Route path="/login" element={<LoginPage />} />
+        <Route index element={<Navigate to="/lightFood" replace />} />
+        <Route path="lightFood" element={<HomePage />} />
+        <Route path="login" element={<LoginPage />} />
+        <Route path="register" element={<RegisterPage />} />
       </Route>
 
       {/* Customer, Driver, Admin Dashboard */}
@@ -84,7 +87,7 @@ export default function AppRouter() {
         path="/dashboard/*"
       />
 
-      <Route path="*" element={<Navigate to="/" replace />} />
+      <Route path="*" element={<Navigate to="/lightFood" replace />} />
     </Routes>
   );
 }
