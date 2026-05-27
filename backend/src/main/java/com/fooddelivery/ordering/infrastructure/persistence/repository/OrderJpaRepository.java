@@ -22,9 +22,7 @@ public interface OrderJpaRepository extends JpaRepository<OrderJpaEntity, UUID> 
             SELECT COALESCE(SUM(o.totalAmount), 0)
             FROM OrderJpaEntity o
             WHERE o.restaurantId = :restaurantId
-              AND o.status NOT IN ('CANCELLED_BY_CUSTOMER', 'CANCELLED_BY_RESTAURANT',
-                                   'CANCELLED_BY_SYSTEM', 'PAYMENT_FAILED',
-                                   'NO_DRIVER_AVAILABLE', 'DELIVERY_FAILED')
+              AND o.status = 'CUSTOMER_CONFIRMED'
             """)
     double getTotalRevenue(@Param("restaurantId") UUID restaurantId);
 
@@ -33,9 +31,7 @@ public interface OrderJpaRepository extends JpaRepository<OrderJpaEntity, UUID> 
             FROM OrderJpaEntity o
             WHERE o.restaurantId = :restaurantId
               AND CAST(o.createdAt AS date) = CURRENT_DATE
-              AND o.status NOT IN ('CANCELLED_BY_CUSTOMER', 'CANCELLED_BY_RESTAURANT',
-                                   'CANCELLED_BY_SYSTEM', 'PAYMENT_FAILED',
-                                   'NO_DRIVER_AVAILABLE', 'DELIVERY_FAILED')
+              AND o.status = 'CUSTOMER_CONFIRMED'
             """)
     double getTodayRevenue(@Param("restaurantId") UUID restaurantId);
 
@@ -45,9 +41,7 @@ public interface OrderJpaRepository extends JpaRepository<OrderJpaEntity, UUID> 
             WHERE o.restaurantId = :restaurantId
               AND YEAR(o.createdAt) = YEAR(CURRENT_DATE)
               AND MONTH(o.createdAt) = MONTH(CURRENT_DATE)
-              AND o.status NOT IN ('CANCELLED_BY_CUSTOMER', 'CANCELLED_BY_RESTAURANT',
-                                   'CANCELLED_BY_SYSTEM', 'PAYMENT_FAILED',
-                                   'NO_DRIVER_AVAILABLE', 'DELIVERY_FAILED')
+              AND o.status = 'CUSTOMER_CONFIRMED'
             """)
     double getMonthlyRevenue(@Param("restaurantId") UUID restaurantId);
 

@@ -117,6 +117,7 @@ CREATE TABLE
         price_amount DECIMAL(10, 2) NOT NULL,
         price_currency VARCHAR(3) NOT NULL,
         is_available BOOLEAN NOT NULL DEFAULT TRUE,
+        created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
         FOREIGN KEY (restaurant_id) REFERENCES restaurants (id)
     );
 

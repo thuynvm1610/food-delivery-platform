@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -38,6 +39,9 @@ public class DishJpaEntity {
 
     @Column(name = "is_available", nullable = false)
     private boolean isAvailable = true;
+
+    @Column(name = "created_at", nullable = false)
+    private LocalDateTime createdAt;
 
     @OneToMany(mappedBy = "dish", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private List<DishImageJpaEntity> images;

@@ -2,9 +2,13 @@ package com.fooddelivery.restaurant.infrastructure.persistence.mapper;
 
 import com.fooddelivery.restaurant.application.output.DashboardStatsOutput;
 import com.fooddelivery.restaurant.presentation.response.DashboardStatsResponse;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
 
 import java.util.stream.Collectors;
 
+@Component
+@RequiredArgsConstructor
 public class DashboardStatsMapper {
 
     public DashboardStatsResponse toDashboardStatsResponse(DashboardStatsOutput output) {
