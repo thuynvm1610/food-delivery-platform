@@ -7,7 +7,14 @@ import {
   useState,
   type ReactNode,
 } from 'react';
-import { fetchCurrentUser, login as loginApi, logout as logoutApi } from '../api/auth';
+import { isAxiosError } from 'axios';
+import {
+  fetchCurrentUser,
+  login as loginApi,
+  logout as logoutApi,
+  refreshAccessToken,
+} from '../api/auth';
+import { onAuthExpired } from '../api/authSessionEvents';
 import type { SessionUser } from '../types/auth';
 
 interface AuthContextValue {
@@ -30,15 +37,29 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const sessionUser = await fetchCurrentUser();
       setUser(sessionUser);
       return sessionUser;
-    } catch {
-      setUser(null);
-      return null;
+    } catch (error) {
+      if (!isAxiosError(error) || (error.response?.status !== 401 && error.response?.status !== 403)) {
+        setUser(null);
+        return null;
+      }
+
+      try {
+        await refreshAccessToken();
+        const sessionUser = await fetchCurrentUser();
+        setUser(sessionUser);
+        return sessionUser;
+      } catch {
+        setUser(null);
+        return null;
+      }
     }
   }, []);
 
   useEffect(() => {
     refreshSession().finally(() => setIsLoading(false));
   }, [refreshSession]);
+
+  useEffect(() => onAuthExpired(() => setUser(null)), []);
 
   const login = useCallback(async (email: string, password: string) => {
     const result = await loginApi(email, password);

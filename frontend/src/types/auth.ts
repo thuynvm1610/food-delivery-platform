@@ -4,6 +4,8 @@ export type UserRole =
   | 'ROLE_RESTAURANT'
   | 'ROLE_ADMIN';
 
+export type RegisterRole = Exclude<UserRole, 'ROLE_ADMIN'>;
+
 export interface SessionUser {
   userId: string;
   email: string;
@@ -14,4 +16,10 @@ export interface LoginResponse {
   userId: string;
   email: string;
   role: UserRole;
+}
+
+export interface RegisterResponse {
+  userId: string;
+  email: string;
+  role: RegisterRole;
 }

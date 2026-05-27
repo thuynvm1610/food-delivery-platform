@@ -15,10 +15,17 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
 public class RegisterUseCaseImpl implements RegisterUseCase {
+
+    private static final Set<String> ALLOWED_REGISTER_ROLES = Set.of(
+            "ROLE_CUSTOMER",
+            "ROLE_RESTAURANT",
+            "ROLE_DRIVER"
+    );
 
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
@@ -32,6 +39,10 @@ public class RegisterUseCaseImpl implements RegisterUseCase {
         // 1. Check email already exists
         if (userRepository.existsByEmail(email)) {
             throw new DomainException(ErrorCode.EMAIL_ALREADY_EXISTS);
+        }
+
+        if (!ALLOWED_REGISTER_ROLES.contains(input.getRoleName())) {
+            throw new DomainException(ErrorCode.REGISTRATION_ROLE_NOT_ALLOWED);
         }
 
         // 2. Find role

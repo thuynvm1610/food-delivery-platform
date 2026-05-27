@@ -12,7 +12,7 @@ export default function RoleRoute({ allowedRoles, children }: RoleRouteProps) {
   const { user } = useAuth();
 
   if (!user) {
-    return <Navigate to="/login" replace />;
+    return <Navigate to="/lightFood" replace />;
   }
 
   if (!allowedRoles.includes(user.role)) {

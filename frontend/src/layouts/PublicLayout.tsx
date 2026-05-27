@@ -8,8 +8,8 @@ export default function PublicLayout() {
   return (
     <div className="layout">
       <header className="layout-header">
-        <Link to="/" className="brand">
-          Food Delivery
+        <Link to="/lightFood" className="brand">
+          lightFood
         </Link>
         <nav className="button-row" style={{ marginTop: 0 }}>
           {isAuthenticated && user ? (
@@ -17,9 +17,14 @@ export default function PublicLayout() {
               Vào khu vực của tôi
             </Link>
           ) : (
-            <Link className="btn btn-primary" to="/login">
-              Đăng nhập
-            </Link>
+            <>
+              <Link className="btn btn-secondary" to="/register">
+                Đăng ký
+              </Link>
+              <Link className="btn btn-primary" to="/login">
+                Đăng nhập
+              </Link>
+            </>
           )}
         </nav>
       </header>

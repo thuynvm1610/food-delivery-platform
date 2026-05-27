@@ -1,0 +1,75 @@
+package com.fooddelivery.restaurant.infrastructure.persistence.adapter;
+
+import com.fooddelivery.restaurant.domain.entity.RestaurantImage;
+import com.fooddelivery.restaurant.domain.repository.RestaurantImageRepository;
+import com.fooddelivery.restaurant.infrastructure.persistence.entity.RestaurantImageJpaEntity;
+import com.fooddelivery.restaurant.infrastructure.persistence.repository.RestaurantImageJpaRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Repository;
+
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+import java.util.stream.Collectors;
+
+@Repository
+@RequiredArgsConstructor
+public class RestaurantImageRepositoryImpl implements RestaurantImageRepository {
+
+    private final RestaurantImageJpaRepository jpaRepository;
+
+    @Override
+    public RestaurantImage save(RestaurantImage image) {
+        RestaurantImageJpaEntity entity = new RestaurantImageJpaEntity();
+        entity.setId(image.getId());
+        entity.setImageUrl(image.getImageUrl());
+        entity.setDisplayOrder(image.getDisplayOrder());
+        // Note: Restaurant relationship should be set by caller
+
+        RestaurantImageJpaEntity saved = jpaRepository.save(entity);
+
+        RestaurantImage result = new RestaurantImage();
+        result.setId(saved.getId());
+        result.setRestaurantId(saved.getRestaurant().getId());
+        result.setImageUrl(saved.getImageUrl());
+        result.setDisplayOrder(saved.getDisplayOrder());
+
+        return result;
+    }
+
+    @Override
+    public Optional<RestaurantImage> findById(UUID id) {
+        return jpaRepository.findById(id)
+                .map(entity -> new RestaurantImage(
+                        entity.getId(),
+                        entity.getRestaurant().getId(),
+                        entity.getImageUrl(),
+                        entity.getDisplayOrder()
+                ));
+    }
+
+    @Override
+    public List<RestaurantImage> findByRestaurantId(UUID restaurantId) {
+        return jpaRepository.findByRestaurant_Id(restaurantId).stream()
+                .map(entity -> new RestaurantImage(
+                        entity.getId(),
+                        entity.getRestaurant().getId(),
+                        entity.getImageUrl(),
+                        entity.getDisplayOrder()
+                ))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public void delete(RestaurantImage image) {
+        jpaRepository.deleteById(image.getId());
+    }
+
+    @Override
+    public void deleteAll(List<RestaurantImage> images) {
+        List<UUID> ids = images.stream()
+                .map(RestaurantImage::getId)
+                .collect(Collectors.toList());
+        jpaRepository.deleteAllById(ids);
+    }
+}

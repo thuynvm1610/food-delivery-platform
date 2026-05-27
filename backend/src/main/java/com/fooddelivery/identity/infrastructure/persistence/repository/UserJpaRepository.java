@@ -7,7 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.Optional;
 import java.util.UUID;
 
-public interface SpringDataUserJpaRepository extends JpaRepository<UserJpaEntity, UUID> {
+public interface UserJpaRepository extends JpaRepository<UserJpaEntity, UUID> {
 
     @EntityGraph(attributePaths = "role")
     Optional<UserJpaEntity> findById(UUID id);
