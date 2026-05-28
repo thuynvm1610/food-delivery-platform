@@ -8,9 +8,8 @@ import { Toast } from '../../components/common/Toast';
 import type { OrderStatus } from '../../types/restaurant';
 
 export const RestaurantOrders: React.FC = () => {
-  const { orders, loading, error, filters, loadOrders, setFilters, selectOrder, getOrderDetail, confirmOrder, startPreparing, markReady, cancelOrder, clearError } = useOrder();
+  const { orders, loading, error, filters, loadOrders, setFilters, confirmOrder, startPreparing, markReady, cancelOrder, clearError } = useOrder();
   const { restaurant } = useRestaurant();
-  const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
   useEffect(() => {
@@ -100,8 +99,7 @@ export const RestaurantOrders: React.FC = () => {
           orders.map(order => (
             <div
               key={order.id}
-              className="bg-white rounded-lg shadow p-4 cursor-pointer hover:shadow-lg transition"
-              onClick={() => setSelectedOrderId(order.id)}
+              className="bg-white rounded-lg shadow p-4 transition"
             >
               <div className="flex justify-between items-start mb-3">
                 <div>

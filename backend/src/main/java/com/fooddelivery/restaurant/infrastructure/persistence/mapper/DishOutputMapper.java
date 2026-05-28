@@ -1,8 +1,10 @@
 package com.fooddelivery.restaurant.infrastructure.persistence.mapper;
 
 import com.fooddelivery.restaurant.application.output.DishImageOutput;
+import com.fooddelivery.restaurant.application.output.DishCategoryOutput;
 import com.fooddelivery.restaurant.application.output.DishOutput;
 import com.fooddelivery.restaurant.domain.aggregate.Dish;
+import com.fooddelivery.restaurant.domain.aggregate.DishCategory;
 import com.fooddelivery.restaurant.domain.entity.DishImage;
 import org.springframework.stereotype.Component;
 
@@ -31,6 +33,12 @@ public class DishOutputMapper {
                     .collect(Collectors.toList()));
         }
 
+        if (dish.getCategories() != null) {
+            output.setCategories(dish.getCategories().stream()
+                    .map(this::toDishCategoryOutput)
+                    .collect(Collectors.toList()));
+        }
+
         return output;
     }
 
@@ -43,6 +51,16 @@ public class DishOutputMapper {
         output.setImageUrl(image.getImageUrl());
         output.setDisplayOrder(image.getDisplayOrder());
 
+        return output;
+    }
+
+    public DishCategoryOutput toDishCategoryOutput(DishCategory category) {
+        if (category == null) return null;
+
+        DishCategoryOutput output = new DishCategoryOutput();
+        output.setId(category.getId());
+        output.setName(category.getName());
+        output.setDescription(category.getDescription());
         return output;
     }
 

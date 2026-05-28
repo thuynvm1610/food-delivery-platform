@@ -6,15 +6,19 @@ interface FilterBarProps {
   options?: {
     label: string;
     key: string;
-    type: 'select' | 'text' | 'date';
+    type: 'select' | 'text' | 'date' | 'number';
     choices?: { label: string; value: any }[];
     placeholder?: string;
+    min?: number;
+    max?: number;
+    step?: number;
   }[];
+  className?: string;
 }
 
-export const FilterBar: React.FC<FilterBarProps> = ({ filters, onFilterChange, options = [] }) => {
+export const FilterBar: React.FC<FilterBarProps> = ({ filters, onFilterChange, options = [], className }) => {
   return (
-    <div className="bg-white rounded-lg shadow p-4 flex flex-wrap gap-4 items-center">
+    <div className={`bg-white rounded-lg shadow p-4 flex flex-wrap gap-4 items-center ${className ?? ''}`.trim()}>
       {options.map(opt => (
         <div key={opt.key} className="flex flex-col">
           <label className="text-sm text-gray-600 mb-1 font-semibold">{opt.label}</label>
@@ -36,6 +40,17 @@ export const FilterBar: React.FC<FilterBarProps> = ({ filters, onFilterChange, o
               type="date"
               value={filters[opt.key] || ''}
               onChange={(e) => onFilterChange(opt.key, e.target.value || undefined)}
+              className="border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          ) : opt.type === 'number' ? (
+            <input
+              type="number"
+              placeholder={opt.placeholder}
+              min={opt.min}
+              max={opt.max}
+              step={opt.step ?? 1}
+              value={filters[opt.key] ?? ''}
+              onChange={(e) => onFilterChange(opt.key, e.target.value !== '' ? Number(e.target.value) : undefined)}
               className="border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           ) : (

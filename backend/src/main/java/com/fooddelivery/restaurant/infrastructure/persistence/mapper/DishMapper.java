@@ -1,7 +1,9 @@
 package com.fooddelivery.restaurant.infrastructure.persistence.mapper;
 
 import com.fooddelivery.restaurant.domain.aggregate.Dish;
+import com.fooddelivery.restaurant.domain.aggregate.DishCategory;
 import com.fooddelivery.restaurant.domain.entity.DishImage;
+import com.fooddelivery.restaurant.infrastructure.persistence.entity.DishCategoryJpaMapping;
 import com.fooddelivery.restaurant.infrastructure.persistence.entity.DishImageJpaEntity;
 import com.fooddelivery.restaurant.infrastructure.persistence.entity.DishJpaEntity;
 import lombok.RequiredArgsConstructor;
@@ -28,6 +30,18 @@ public class DishMapper {
                 .collect(Collectors.toList())
                 : null;
 
+        List<DishCategory> categories = jpaEntity.getCategoryMappings() != null
+                ? jpaEntity.getCategoryMappings().stream()
+                .map(DishCategoryJpaMapping::getCategory)
+                .filter(category -> category != null)
+                .map(category -> new DishCategory(
+                        category.getId(),
+                        category.getName(),
+                        category.getDescription()
+                ))
+                .collect(Collectors.toList())
+                : null;
+
         return new Dish(
                 jpaEntity.getId(),
                 jpaEntity.getRestaurantId(),
@@ -37,7 +51,8 @@ public class DishMapper {
                 jpaEntity.getPriceCurrency(),
                 jpaEntity.isAvailable(),
                 jpaEntity.getCreatedAt(),
-                images
+                images,
+                categories
         );
     }
 

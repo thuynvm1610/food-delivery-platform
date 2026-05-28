@@ -5,6 +5,7 @@ interface ToastProps {
   type?: 'success' | 'error' | 'info' | 'warning';
   duration?: number;
   onClose?: () => void;
+  className?: string;
 }
 
 const typeConfig = {
@@ -14,7 +15,7 @@ const typeConfig = {
   warning: { bg: 'bg-yellow-100', text: 'text-yellow-800', icon: '!' },
 };
 
-export const Toast: React.FC<ToastProps> = ({ message, type = 'info', duration = 3000, onClose }) => {
+export const Toast: React.FC<ToastProps> = ({ message, type = 'info', duration = 3000, onClose, className }) => {
   const [isVisible, setIsVisible] = useState(true);
   const config = typeConfig[type];
 
@@ -31,7 +32,7 @@ export const Toast: React.FC<ToastProps> = ({ message, type = 'info', duration =
 
   return (
     <div
-      className={`fixed bottom-4 right-4 rounded-lg shadow-lg p-4 ${config.bg} ${config.text} flex items-center gap-3 max-w-sm animation-fade-in-down`}
+      className={`fixed bottom-4 right-4 rounded-lg shadow-lg p-4 ${config.bg} ${config.text} flex items-center gap-3 max-w-sm animation-fade-in-down ${className ?? ''}`.trim()}
     >
       <span className="text-xl font-bold">{config.icon}</span>
       <p className="text-sm font-medium">{message}</p>

@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 
 interface ImageUploaderProps {
   onImagesSelected: (files: File[]) => void;
@@ -7,40 +7,55 @@ interface ImageUploaderProps {
   multiple?: boolean;
 }
 
+type SelectedImage = {
+  file: File;
+  previewUrl: string;
+};
+
 export const ImageUploader: React.FC<ImageUploaderProps> = ({
   onImagesSelected,
   maxFiles = 5,
   accept = 'image/*',
   multiple = true,
 }) => {
-  const [preview, setPreview] = useState<string[]>([]);
+  const [items, setItems] = useState<SelectedImage[]>([]);
   const [dragActive, setDragActive] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
+  const itemsRef = useRef<SelectedImage[]>([]);
 
-  const handleFiles = (files: FileList) => {
-    const fileArray = Array.from(files);
-    if (fileArray.length + preview.length > maxFiles) {
+  const syncFiles = (nextItems: SelectedImage[]) => {
+    onImagesSelected(nextItems.map(item => item.file));
+  };
+
+  const handleFiles = (filesList: FileList) => {
+    const fileArray = Array.from(filesList);
+    const remainingSlots = maxFiles - itemsRef.current.length;
+
+    if (fileArray.length > remainingSlots) {
       alert(`You can only upload up to ${maxFiles} images`);
       return;
     }
 
-    // Create previews
-    fileArray.forEach(file => {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        if (e.target?.result) {
-          setPreview(prev => [...prev, e.target!.result as string]);
-        }
-      };
-      reader.readAsDataURL(file);
-    });
+    const nextItems = [
+      ...itemsRef.current,
+      ...fileArray.map(file => ({
+        file,
+        previewUrl: URL.createObjectURL(file),
+      })),
+    ];
 
-    onImagesSelected(fileArray);
+    setItems(nextItems);
+    syncFiles(nextItems);
+
+    if (inputRef.current) {
+      inputRef.current.value = '';
+    }
   };
 
   const handleDrag = (e: React.DragEvent) => {
     e.preventDefault();
     e.stopPropagation();
+
     if (e.type === 'dragenter' || e.type === 'dragover') {
       setDragActive(true);
     } else if (e.type === 'dragleave') {
@@ -65,8 +80,27 @@ export const ImageUploader: React.FC<ImageUploaderProps> = ({
   };
 
   const removePreview = (index: number) => {
-    setPreview(prev => prev.filter((_, i) => i !== index));
+    setItems(prevItems => {
+      const itemToRemove = prevItems[index];
+      if (itemToRemove) {
+        URL.revokeObjectURL(itemToRemove.previewUrl);
+      }
+
+      const nextItems = prevItems.filter((_, i) => i !== index);
+      syncFiles(nextItems);
+      return nextItems;
+    });
   };
+
+  useEffect(() => {
+    itemsRef.current = items;
+  }, [items]);
+
+  useEffect(() => {
+    return () => {
+      itemsRef.current.forEach(item => URL.revokeObjectURL(item.previewUrl));
+    };
+  }, []);
 
   return (
     <div className="w-full">
@@ -89,21 +123,22 @@ export const ImageUploader: React.FC<ImageUploaderProps> = ({
           className="hidden"
         />
         <p className="text-gray-700 font-semibold">Kéo thả ảnh hoặc nhấp để chọn</p>
-        <p className="text-sm text-gray-500 mt-1">Hỗ trợ JPG, PNG, GIF tối đa {maxFiles} ảnh</p>
+        <p className="text-sm text-gray-500 mt-1">Hỗ trợ JPG, PNG, GIF, tối đa {maxFiles} ảnh</p>
       </div>
 
-      {preview.length > 0 && (
+      {items.length > 0 && (
         <div className="mt-4">
-          <p className="text-sm font-semibold mb-2">Ảnh đã chọn ({preview.length}/{maxFiles})</p>
+          <p className="text-sm font-semibold mb-2">Ảnh đã chọn ({items.length}/{maxFiles})</p>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            {preview.map((src, idx) => (
-              <div key={idx} className="relative group">
-                <img src={src} alt={`Preview ${idx}`} className="w-full h-24 object-cover rounded" />
+            {items.map((item, idx) => (
+              <div key={`${item.file.name}-${item.file.lastModified}-${idx}`} className="relative group">
+                <img src={item.previewUrl} alt={`Preview ${idx}`} className="w-full h-24 object-cover rounded" />
                 <button
+                  type="button"
                   onClick={() => removePreview(idx)}
                   className="absolute top-1 right-1 bg-red-500 text-white rounded-full w-6 h-6 opacity-0 group-hover:opacity-100 transition"
                 >
-                  ✕
+                  ×
                 </button>
               </div>
             ))}
@@ -111,10 +146,7 @@ export const ImageUploader: React.FC<ImageUploaderProps> = ({
         </div>
       )}
 
-      {/* Note for Cloudinary Integration */}
-      <p className="text-xs text-gray-400 mt-3">
-        💡 Note: Images will be uploaded to Cloudinary after form submission
-      </p>
+      <p className="text-xs text-gray-400 mt-3">Ảnh sẽ được tải lên sau khi lưu món.</p>
     </div>
   );
 };

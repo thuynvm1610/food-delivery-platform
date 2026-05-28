@@ -14,4 +14,6 @@ public interface DishImageRepository {
     List<DishImage> findByDishId(UUID dishId);
 
     void delete(DishImage image);
+
+    void deleteByDishIdAndImageIds(UUID dishId, List<UUID> imageIds);
 }

@@ -1,6 +1,6 @@
 import { apiClient } from './client';
+import type { BaseResponse, PageResponse } from '../types/api';
 import type {
-  BaseResponse,
   Restaurant,
   Dish,
   Order,
@@ -11,6 +11,9 @@ import type {
   DishReview,
   RestaurantOperatingHour,
   RestaurantImage,
+  DishCategory,
+  DishImage,
+  DishUpsertPayload,
 } from '../types/restaurant';
 
 // Restaurant Profile
@@ -72,20 +75,35 @@ export const restaurantApi = {
     apiClient.post<BaseResponse<Order>>(`/restaurants/me/orders/${orderId}/cancel`, { reason }),
 
   // Menu
-  getDishes: (filters?: { category?: string; search?: string; page?: number; limit?: number }) =>
-    apiClient.get<BaseResponse<Dish[]>>('/restaurants/me/dishes', { params: filters }),
+  getDishes: (filters?: { categoryIds?: string[]; search?: string; page?: number; limit?: number; minPrice?: number; maxPrice?: number }) => {
+    const params = new URLSearchParams();
 
-  createDish: (data: Partial<Dish>) =>
+    if (filters?.categoryIds?.length) {
+      filters.categoryIds.forEach(categoryId => params.append('categoryIds', categoryId));
+    }
+    if (filters?.search) params.set('search', filters.search);
+    if (filters?.page != null) params.set('page', String(filters.page));
+    if (filters?.limit != null) params.set('limit', String(filters.limit));
+    if (filters?.minPrice != null) params.set('minPrice', String(filters.minPrice));
+    if (filters?.maxPrice != null) params.set('maxPrice', String(filters.maxPrice));
+
+    return apiClient.get<BaseResponse<PageResponse<Dish[]>>>('/restaurants/me/dishes', { params });
+  },
+
+  getDishById: (dishId: string) =>
+    apiClient.get<BaseResponse<Dish>>(`/restaurants/me/dishes/${dishId}`),
+
+  createDish: (data: DishUpsertPayload) =>
     apiClient.post<BaseResponse<Dish>>('/restaurants/me/dishes', data),
 
-  updateDish: (dishId: string, data: Partial<Dish>) =>
+  updateDish: (dishId: string, data: DishUpsertPayload) =>
     apiClient.put<BaseResponse<Dish>>(`/restaurants/me/dishes/${dishId}`, data),
 
   deleteDish: (dishId: string) =>
     apiClient.delete<BaseResponse<void>>(`/restaurants/me/dishes/${dishId}`),
 
   updateDishAvailability: (dishId: string, isAvailable: boolean) =>
-    apiClient.patch<BaseResponse<Dish>>(
+    apiClient.put<BaseResponse<Dish>>(
       `/restaurants/me/dishes/${dishId}/availability`,
       { isAvailable }
     ),
@@ -100,6 +118,11 @@ export const restaurantApi = {
 
   deleteDishImage: (dishId: string, imageId: string) =>
     apiClient.delete<BaseResponse<void>>(`/restaurants/me/dishes/${dishId}/images/${imageId}`),
+
+  deleteDishImages: (dishId: string, imageIds: string[]) =>
+    apiClient.delete<BaseResponse<void>>(`/restaurants/me/dishes/${dishId}/images`, {
+      data: { imageIds },
+    }),
 
   reorderDishImages: (dishId: string, imageIds: string[]) =>
     apiClient.put<BaseResponse<DishImage[]>>(

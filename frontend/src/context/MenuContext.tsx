@@ -1,6 +1,13 @@
 import React, { createContext, useContext, useState, useCallback } from 'react';
 import { restaurantApi } from '../api/restaurant';
-import type { Dish, DishCategory, DishImage } from '../types/restaurant';
+import type { Dish, DishCategory, DishUpsertPayload } from '../types/restaurant';
+
+interface PaginationState {
+  page: number;
+  limit: number;
+  totalItems: number;
+  totalPages: number;
+}
 
 interface MenuContextType {
   dishes: Dish[];
@@ -8,25 +15,32 @@ interface MenuContextType {
   selectedDish: Dish | null;
   loading: boolean;
   error: string | null;
-  filters: { category?: string; search?: string; page: number; limit: number };
+  filters: { categoryIds: string[]; search?: string; page: number; limit: number; minPrice?: number; maxPrice?: number };
+  pagination: PaginationState;
   
   // Actions
-  loadDishes: (filters?: Partial<{ category?: string; search?: string; page?: number; limit?: number }>) => Promise<void>;
+  loadDishes: (filters?: Partial<{ categoryIds?: string[]; search?: string; page?: number; limit?: number; minPrice?: number; maxPrice?: number }>) => Promise<void>;
   loadCategories: () => Promise<void>;
-  createDish: (data: Partial<Dish>) => Promise<void>;
-  updateDish: (dishId: string, data: Partial<Dish>) => Promise<void>;
+  createDish: (data: DishUpsertPayload) => Promise<void>;
+  updateDish: (dishId: string, data: DishUpsertPayload) => Promise<void>;
   deleteDish: (dishId: string) => Promise<void>;
   updateDishAvailability: (dishId: string, isAvailable: boolean) => Promise<void>;
   uploadDishImages: (dishId: string, formData: FormData) => Promise<void>;
   deleteDishImage: (dishId: string, imageId: string) => Promise<void>;
+  deleteDishImages: (dishId: string, imageIds: string[]) => Promise<void>;
   reorderDishImages: (dishId: string, imageIds: string[]) => Promise<void>;
   setSelectedDish: (dish: Dish | null) => void;
-  setFilters: (filters: Partial<{ category?: string; search?: string; page?: number; limit?: number }>) => void;
+  setFilters: (filters: Partial<{ categoryIds?: string[]; search?: string; page?: number; limit?: number; minPrice?: number; maxPrice?: number }>) => void;
   clearError: () => void;
   bulkUpdateAvailability: (dishIds: string[], isAvailable: boolean) => Promise<void>;
 }
 
 const MenuContext = createContext<MenuContextType | undefined>(undefined);
+
+const normalizeDishAvailability = (dish: Dish): Dish => ({
+  ...dish,
+  isAvailable: dish.isAvailable ?? dish.available ?? false,
+});
 
 export const MenuProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [dishes, setDishes] = useState<Dish[]>([]);
@@ -34,25 +48,41 @@ export const MenuProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [selectedDish, setSelectedDish] = useState<Dish | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [filters, setFilters] = useState({ category: undefined as string | undefined, search: undefined as string | undefined, page: 1, limit: 20 });
+  const [filters, setFiltersState] = useState({ categoryIds: [] as string[], search: undefined as string | undefined, page: 1, limit: 4, minPrice: undefined as number | undefined, maxPrice: undefined as number | undefined });
+  const [pagination, setPagination] = useState<PaginationState>({ page: 1, limit: 4, totalItems: 0, totalPages: 1 });
 
-  const loadDishes = useCallback(async (newFilters?: Partial<{ category?: string; search?: string; page?: number; limit?: number }>) => {
+  const setFilters = useCallback((newFilters: Partial<{ categoryIds?: string[]; search?: string; page?: number; limit?: number; minPrice?: number; maxPrice?: number }>) => {
+    setFiltersState(prev => ({
+      ...prev,
+      ...newFilters,
+      categoryIds: newFilters.categoryIds ? [...newFilters.categoryIds] : prev.categoryIds,
+    }));
+  }, []);
+
+  const loadDishes = useCallback(async (newFilters?: Partial<{ categoryIds?: string[]; search?: string; page?: number; limit?: number; minPrice?: number; maxPrice?: number }>) => {
     try {
       setLoading(true);
       setError(null);
       
-      const actualFilters = newFilters ? { ...filters, ...newFilters } : filters;
+      const actualFilters = newFilters ? { ...filters, ...newFilters, categoryIds: newFilters.categoryIds ? [...newFilters.categoryIds] : filters.categoryIds } : filters;
       const response = await restaurantApi.getDishes({
-        category: actualFilters.category,
+        categoryIds: actualFilters.categoryIds,
         search: actualFilters.search,
         page: actualFilters.page,
         limit: actualFilters.limit,
+        minPrice: actualFilters.minPrice,
+        maxPrice: actualFilters.maxPrice,
       });
       
-      setDishes(response.data.data);
-      if (newFilters) {
-        setFilters(actualFilters);
-      }
+      const paginatedData = response.data.data;
+      setDishes((paginatedData.content || []).map(normalizeDishAvailability));
+      setPagination({
+        page: (paginatedData.number ?? 0) + 1,
+        limit: paginatedData.size ?? filters.limit,
+        totalItems: paginatedData.totalElements ?? 0,
+        totalPages: paginatedData.totalPages ?? 1,
+      });
+      setFilters(actualFilters);
     } catch (err: any) {
       setError(err.response?.data?.message || 'Failed to load dishes');
       throw err;
@@ -72,24 +102,24 @@ export const MenuProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   }, []);
 
-  const createDish = useCallback(async (data: Partial<Dish>) => {
+  const createDish = useCallback(async (data: DishUpsertPayload) => {
     try {
       setError(null);
       const response = await restaurantApi.createDish(data);
-      setDishes([...dishes, response.data.data]);
+      setDishes([...dishes, normalizeDishAvailability(response.data.data)]);
     } catch (err: any) {
       setError(err.response?.data?.message || 'Failed to create dish');
       throw err;
     }
   }, [dishes]);
 
-  const updateDish = useCallback(async (dishId: string, data: Partial<Dish>) => {
+  const updateDish = useCallback(async (dishId: string, data: DishUpsertPayload) => {
     try {
       setError(null);
       const response = await restaurantApi.updateDish(dishId, data);
-      setDishes(dishes.map(d => d.id === dishId ? response.data.data : d));
+      setDishes(dishes.map(d => d.id === dishId ? normalizeDishAvailability(response.data.data) : d));
       if (selectedDish?.id === dishId) {
-        setSelectedDish(response.data.data);
+        setSelectedDish(normalizeDishAvailability(response.data.data));
       }
     } catch (err: any) {
       setError(err.response?.data?.message || 'Failed to update dish');
@@ -115,7 +145,7 @@ export const MenuProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       setError(null);
       const response = await restaurantApi.updateDishAvailability(dishId, isAvailable);
-      setDishes(dishes.map(d => d.id === dishId ? response.data.data : d));
+      setDishes(dishes.map(d => d.id === dishId ? normalizeDishAvailability(response.data.data) : d));
     } catch (err: any) {
       setError(err.response?.data?.message || 'Failed to update dish availability');
       throw err;
@@ -148,6 +178,21 @@ export const MenuProvider: React.FC<{ children: React.ReactNode }> = ({ children
       ));
     } catch (err: any) {
       setError(err.response?.data?.message || 'Failed to delete image');
+      throw err;
+    }
+  }, [dishes]);
+
+  const deleteDishImages = useCallback(async (dishId: string, imageIds: string[]) => {
+    try {
+      setError(null);
+      await restaurantApi.deleteDishImages(dishId, imageIds);
+      setDishes(dishes.map(d =>
+        d.id === dishId
+          ? { ...d, images: d.images.filter(img => !imageIds.includes(img.id)) }
+          : d
+      ));
+    } catch (err: any) {
+      setError(err.response?.data?.message || 'Failed to delete images');
       throw err;
     }
   }, [dishes]);
@@ -193,6 +238,7 @@ export const MenuProvider: React.FC<{ children: React.ReactNode }> = ({ children
     loading,
     error,
     filters,
+    pagination,
     loadDishes,
     loadCategories,
     createDish,
@@ -201,6 +247,7 @@ export const MenuProvider: React.FC<{ children: React.ReactNode }> = ({ children
     updateDishAvailability,
     uploadDishImages,
     deleteDishImage,
+    deleteDishImages,
     reorderDishImages,
     setSelectedDish,
     setFilters,

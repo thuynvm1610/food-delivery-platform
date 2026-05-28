@@ -21,6 +21,7 @@ public class Dish implements AggregateRoot<UUID> {
     private boolean isAvailable;
     private final LocalDateTime createdAt;
     private final List<DishImage> images;
+    private List<DishCategory> categories;
 
     // Constructor for creating a new Dish
     public Dish(UUID id, UUID restaurantId, String name, BigDecimal priceAmount, String priceCurrency) {
@@ -32,6 +33,7 @@ public class Dish implements AggregateRoot<UUID> {
         this.isAvailable = true;
         this.createdAt = LocalDateTime.now();
         this.images = new ArrayList<>();
+        this.categories = new ArrayList<>();
     }
 
     // Full constructor for reconstructing from DB
@@ -47,6 +49,14 @@ public class Dish implements AggregateRoot<UUID> {
         this.isAvailable = isAvailable;
         this.createdAt = createdAt;
         this.images = images != null ? images : new ArrayList<>();
+        this.categories = new ArrayList<>();
+    }
+
+    public Dish(UUID id, UUID restaurantId, String name, String description,
+                BigDecimal priceAmount, String priceCurrency, boolean isAvailable,
+                LocalDateTime createdAt, List<DishImage> images, List<DishCategory> categories) {
+        this(id, restaurantId, name, description, priceAmount, priceCurrency, isAvailable, createdAt, images);
+        this.categories = categories != null ? categories : new ArrayList<>();
     }
 
     public void updateProfile(String name, String description, BigDecimal priceAmount, String priceCurrency) {
@@ -58,6 +68,10 @@ public class Dish implements AggregateRoot<UUID> {
 
     public void updateAvailability(boolean isAvailable) {
         this.isAvailable = isAvailable;
+    }
+
+    public void updateCategories(List<DishCategory> categories) {
+        this.categories = categories != null ? categories : new ArrayList<>();
     }
 
     public void addImage(DishImage image) {

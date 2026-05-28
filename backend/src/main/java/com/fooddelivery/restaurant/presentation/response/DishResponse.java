@@ -1,5 +1,6 @@
 package com.fooddelivery.restaurant.presentation.response;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 import java.math.BigDecimal;
@@ -15,7 +16,9 @@ public class DishResponse {
     private String description;
     private BigDecimal priceAmount;
     private String priceCurrency;
+    @JsonProperty("isAvailable")
     private boolean isAvailable;
     private LocalDateTime createdAt;
     private List<DishImageResponse> images;
+    private List<DishCategoryResponse> categories;
 }

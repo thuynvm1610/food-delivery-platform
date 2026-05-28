@@ -16,6 +16,7 @@ import { RestaurantOperatingHours } from '../pages/restaurant/RestaurantOperatin
 import { RestaurantVouchers } from '../pages/restaurant/RestaurantVouchers';
 import { RestaurantRevenue } from '../pages/restaurant/RestaurantRevenue';
 import { RestaurantReviews } from '../pages/restaurant/RestaurantReviews';
+import { RestaurantDishForm } from '../pages/restaurant/RestaurantDishForm';
 import ProtectedRoute from './ProtectedRoute';
 import RoleRoute from './RoleRoute';
 
@@ -73,6 +74,8 @@ export default function AppRouter() {
                   <Route path="home" element={<RestaurantDashboardHome />} />
                   <Route path="orders" element={<RestaurantOrders />} />
                   <Route path="menu" element={<RestaurantMenu />} />
+                  <Route path="menu/create" element={<RestaurantDishForm />} />
+                  <Route path="menu/edit/:id" element={<RestaurantDishForm />} />
                   <Route path="profile" element={<RestaurantProfile />} />
                   <Route path="operating-hours" element={<RestaurantOperatingHours />} />
                   <Route path="vouchers" element={<RestaurantVouchers />} />
