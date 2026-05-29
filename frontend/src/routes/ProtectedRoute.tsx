@@ -10,7 +10,11 @@ export default function ProtectedRoute({ children }: ProtectedRouteProps) {
   const location = useLocation();
 
   if (isLoading) {
-    return <div className="page-center">Đang tải phiên đăng nhập...</div>;
+    return (
+      <div className="min-h-[60vh] grid place-items-center text-slate-500">
+        Đang tải phiên đăng nhập...
+      </div>
+    );
   }
 
   if (!isAuthenticated) {

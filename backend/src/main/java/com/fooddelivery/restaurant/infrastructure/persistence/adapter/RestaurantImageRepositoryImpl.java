@@ -3,7 +3,9 @@ package com.fooddelivery.restaurant.infrastructure.persistence.adapter;
 import com.fooddelivery.restaurant.domain.entity.RestaurantImage;
 import com.fooddelivery.restaurant.domain.repository.RestaurantImageRepository;
 import com.fooddelivery.restaurant.infrastructure.persistence.entity.RestaurantImageJpaEntity;
+import com.fooddelivery.restaurant.infrastructure.persistence.entity.RestaurantJpaEntity;
 import com.fooddelivery.restaurant.infrastructure.persistence.repository.RestaurantImageJpaRepository;
+import com.fooddelivery.restaurant.infrastructure.persistence.repository.RestaurantJpaRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -17,6 +19,7 @@ import java.util.stream.Collectors;
 public class RestaurantImageRepositoryImpl implements RestaurantImageRepository {
 
     private final RestaurantImageJpaRepository jpaRepository;
+    private final RestaurantJpaRepository restaurantJpaRepository;
 
     @Override
     public RestaurantImage save(RestaurantImage image) {
@@ -24,7 +27,10 @@ public class RestaurantImageRepositoryImpl implements RestaurantImageRepository 
         entity.setId(image.getId());
         entity.setImageUrl(image.getImageUrl());
         entity.setDisplayOrder(image.getDisplayOrder());
-        // Note: Restaurant relationship should be set by caller
+
+        RestaurantJpaEntity restaurant = restaurantJpaRepository.findById(image.getRestaurantId())
+                .orElseThrow(() -> new RuntimeException("Restaurant not found: " + image.getRestaurantId()));
+        entity.setRestaurant(restaurant);
 
         RestaurantImageJpaEntity saved = jpaRepository.save(entity);
 

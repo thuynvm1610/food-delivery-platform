@@ -3,7 +3,7 @@ package com.fooddelivery.restaurant.application.usecase;
 import com.fooddelivery.restaurant.application.output.RestaurantProfileOutput;
 import com.fooddelivery.restaurant.domain.aggregate.Restaurant;
 import com.fooddelivery.restaurant.domain.repository.RestaurantRepository;
-import com.fooddelivery.restaurant.infrastructure.persistence.mapper.RestaurantProfileMapper;
+import com.fooddelivery.restaurant.infrastructure.persistence.mapper.RestaurantMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -14,13 +14,13 @@ import java.util.UUID;
 public class GetRestaurantProfileUseCaseImpl implements GetRestaurantProfileUseCase {
 
     private final RestaurantRepository restaurantRepository;
-    private final RestaurantProfileMapper restaurantProfileMapper;
+    private final RestaurantMapper restaurantMapper;
 
     @Override
     public RestaurantProfileOutput execute(UUID restaurantId) {
         Restaurant restaurant = restaurantRepository.findById(restaurantId)
                 .orElseThrow(() -> new RuntimeException("Restaurant not found"));
 
-        return restaurantProfileMapper.toRestaurantProfileOutput(restaurant);
+        return restaurantMapper.toRestaurantProfileOutput(restaurant);
     }
 }

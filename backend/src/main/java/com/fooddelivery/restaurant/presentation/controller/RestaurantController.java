@@ -2,29 +2,29 @@ package com.fooddelivery.restaurant.presentation.controller;
 
 import com.fooddelivery.identity.infrastructure.security.AuthenticatedUser;
 import com.fooddelivery.restaurant.application.input.UpdateRestaurantProfileInput;
-import com.fooddelivery.restaurant.application.output.RestaurantProfileOutput;
 import com.fooddelivery.restaurant.application.output.DashboardStatsOutput;
-import com.fooddelivery.restaurant.application.usecase.GetRestaurantProfileUseCase;
-import com.fooddelivery.restaurant.application.usecase.UpdateRestaurantProfileUseCase;
-import com.fooddelivery.restaurant.application.usecase.UpdateRestaurantStatusUseCase;
-import com.fooddelivery.restaurant.application.usecase.GetDashboardStatsUseCase;
+import com.fooddelivery.restaurant.application.output.RestaurantImageOutput;
+import com.fooddelivery.restaurant.application.output.RestaurantProfileOutput;
+import com.fooddelivery.restaurant.application.usecase.*;
 import com.fooddelivery.restaurant.domain.repository.RestaurantRepository;
 import com.fooddelivery.restaurant.domain.value.RestaurantStatus;
 import com.fooddelivery.restaurant.infrastructure.persistence.mapper.DashboardStatsMapper;
-import com.fooddelivery.restaurant.infrastructure.persistence.mapper.RestaurantProfileMapper;
+import com.fooddelivery.restaurant.infrastructure.persistence.mapper.RestaurantMapper;
 import com.fooddelivery.restaurant.presentation.request.UpdateRestaurantProfileRequest;
-import com.fooddelivery.restaurant.presentation.response.RestaurantProfileResponse;
 import com.fooddelivery.restaurant.presentation.response.DashboardStatsResponse;
+import com.fooddelivery.restaurant.presentation.response.RestaurantImageResponse;
+import com.fooddelivery.restaurant.presentation.response.RestaurantProfileResponse;
 import com.fooddelivery.shared.web.BaseResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/v1/restaurants")
@@ -35,8 +35,10 @@ public class RestaurantController {
     private final UpdateRestaurantProfileUseCase updateRestaurantProfileUseCase;
     private final UpdateRestaurantStatusUseCase updateRestaurantStatusUseCase;
     private final GetDashboardStatsUseCase getDashboardStatsUseCase;
+    private final UploadRestaurantImagesUseCase uploadRestaurantImagesUseCase;
+    private final DeleteRestaurantImageUseCase deleteRestaurantImageUseCase;
     private final RestaurantRepository restaurantRepository;
-    private final RestaurantProfileMapper restaurantProfileMapper;
+    private final RestaurantMapper restaurantMapper;
     private final DashboardStatsMapper dashboardStatsMapper;
 
     @GetMapping("/me")
@@ -46,7 +48,7 @@ public class RestaurantController {
                 .orElseThrow(() -> new RuntimeException("Restaurant not found for user: " + user.userId())).getId();
 
         RestaurantProfileOutput output = getRestaurantProfileUseCase.execute(restaurantId);
-        RestaurantProfileResponse response = restaurantProfileMapper.toRestaurantProfileResponse(output);
+        RestaurantProfileResponse response = restaurantMapper.toRestaurantProfileResponse(output);
         return ResponseEntity.ok(BaseResponse.success(response));
     }
 
@@ -72,7 +74,7 @@ public class RestaurantController {
         }
 
         RestaurantProfileOutput output = updateRestaurantProfileUseCase.execute(restaurantId, input);
-        RestaurantProfileResponse response = restaurantProfileMapper.toRestaurantProfileResponse(output);
+        RestaurantProfileResponse response = restaurantMapper.toRestaurantProfileResponse(output);
         return ResponseEntity.ok(BaseResponse.success(response));
     }
 
@@ -85,8 +87,31 @@ public class RestaurantController {
                 .getId();
 
         RestaurantProfileOutput output = updateRestaurantStatusUseCase.execute(restaurantId, status);
-        RestaurantProfileResponse response = restaurantProfileMapper.toRestaurantProfileResponse(output);
+        RestaurantProfileResponse response = restaurantMapper.toRestaurantProfileResponse(output);
         return ResponseEntity.ok(BaseResponse.success(response));
+    }
+
+    @PostMapping(value = "/me/images", consumes = "multipart/form-data")
+    public ResponseEntity<BaseResponse<List<RestaurantImageResponse>>> uploadImages(
+            @AuthenticationPrincipal AuthenticatedUser user,
+            @RequestParam("images") MultipartFile[] images) {
+        UUID restaurantId = restaurantRepository.findByOwnerId(user.userId())
+                .orElseThrow(() -> new RuntimeException("Restaurant not found for user: " + user.userId()))
+                .getId();
+
+        List<RestaurantImageOutput> outputs = uploadRestaurantImagesUseCase.execute(restaurantId, images);
+        List<RestaurantImageResponse> responses = outputs.stream()
+                .map(this::mapToRestaurantImageResponse)
+                .toList();
+
+        return ResponseEntity.ok(BaseResponse.success(responses));
+    }
+
+    @DeleteMapping("/me/images/{imageId}")
+    public ResponseEntity<BaseResponse<Void>> deleteImage(
+            @PathVariable UUID imageId) {
+        deleteRestaurantImageUseCase.execute(imageId);
+        return ResponseEntity.ok(BaseResponse.success(null));
     }
 
     @GetMapping("/me/dashboard/stats")
@@ -96,5 +121,14 @@ public class RestaurantController {
         DashboardStatsOutput output = getDashboardStatsUseCase.execute(user.userId());
         DashboardStatsResponse response = dashboardStatsMapper.toDashboardStatsResponse(output);
         return ResponseEntity.ok(BaseResponse.success(response));
+    }
+
+    private RestaurantImageResponse mapToRestaurantImageResponse(RestaurantImageOutput output) {
+        RestaurantImageResponse response = new RestaurantImageResponse();
+        response.setId(output.getId());
+        response.setRestaurantId(output.getRestaurantId());
+        response.setImageUrl(output.getImageUrl());
+        response.setDisplayOrder(output.getDisplayOrder());
+        return response;
     }
 }

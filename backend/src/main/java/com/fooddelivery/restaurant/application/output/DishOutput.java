@@ -18,4 +18,5 @@ public class DishOutput {
     private boolean isAvailable;
     private LocalDateTime createdAt;
     private List<DishImageOutput> images;
+    private List<DishCategoryOutput> categories;
 }

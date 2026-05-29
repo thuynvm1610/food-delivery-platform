@@ -20,10 +20,13 @@ export interface Dish {
   restaurantId: string;
   name: string;
   description?: string;
-  price: number;
+  price?: number;
+  priceAmount: number;
+  priceCurrency?: string;
   isAvailable: boolean;
+  available?: boolean;
   images: DishImage[];
-  categories: DishCategory[];
+  categories?: DishCategory[];
   rating?: number;
   reviewCount?: number;
 }
@@ -39,6 +42,14 @@ export interface DishCategory {
   id: string;
   name: string;
   description?: string;
+}
+
+export interface DishUpsertPayload {
+  name: string;
+  description?: string;
+  priceAmount: number;
+  priceCurrency: string;
+  categoryIds?: string[];
 }
 
 // Order Types

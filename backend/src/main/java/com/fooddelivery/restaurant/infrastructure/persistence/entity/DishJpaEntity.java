@@ -45,4 +45,7 @@ public class DishJpaEntity {
 
     @OneToMany(mappedBy = "dish", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private List<DishImageJpaEntity> images;
+
+    @OneToMany(mappedBy = "dish", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<DishCategoryJpaMapping> categoryMappings;
 }

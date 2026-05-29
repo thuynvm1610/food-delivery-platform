@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useCallback, useRef, useEffect } from 'react';
+import React, { createContext, useContext, useState, useCallback, useRef } from 'react';
 import { restaurantApi } from '../api/restaurant';
 import type { Order, OrderStatus } from '../types/restaurant';
 
@@ -30,7 +30,11 @@ export const OrderProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [filters, setFilters] = useState({ status: undefined as OrderStatus | undefined, page: 1, limit: 20 });
+  const [filters, setFiltersState] = useState({ status: undefined as OrderStatus | undefined, page: 1, limit: 20 });
+
+  const setFilters = useCallback((newFilters: Partial<{ status?: OrderStatus; page?: number; limit?: number }>) => {
+    setFiltersState(prev => ({ ...prev, ...newFilters }));
+  }, []);
   const wsRef = useRef<WebSocket | null>(null);
 
   const loadOrders = useCallback(async (newFilters?: Partial<{ status?: OrderStatus; page?: number; limit?: number }>) => {
@@ -47,7 +51,7 @@ export const OrderProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       
       setOrders(response.data.data);
       if (newFilters) {
-        setFilters(actualFilters);
+        setFilters(newFilters);
       }
     } catch (err: any) {
       setError(err.response?.data?.message || 'Failed to load orders');
