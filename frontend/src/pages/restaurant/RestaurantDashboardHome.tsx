@@ -267,11 +267,12 @@ const RevenueCard: React.FC<{ label: string; value: string; icon: React.ReactNod
 const SectionTitle: React.FC<{ icon: React.ReactNode; label: string }> = ({ icon, label }) => (
   <div style={{ display: 'flex', alignItems: 'center', gap: 7, marginBottom: 12 }}>
     {icon}
-    <span style={{ fontFamily: "'Sora', sans-serif", fontSize: 13, fontWeight: 800, color: '#0f172a', letterSpacing: '-0.2px' }}>{label}</span>
+    <span style={{ fontSize: 13, fontWeight: 800, color: '#0f172a', letterSpacing: '-0.2px' }}>{label}</span>
   </div>
 );
 
 const cardStyle: React.CSSProperties = {
+  height: 'fit-content',
   background: '#ffffff',
   border: '1px solid #f1f5f9',
   borderRadius: 14,

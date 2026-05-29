@@ -39,7 +39,7 @@ VALUES
         (
                 'b52dfc2e-c948-45bf-a9ec-654b2211cbb4',
                 'admin@foody.vn',
-                '$2a$10$QJNs3LeWveuvVa3WX5D14OVcivNjRdTiELEJMZsVLEDBML2oAAofa',
+                '$2a$10$LMiZg/7VBcYV8RC2yHezpO8OmR79nCFpc3a5z9YdbNtdSx40mGPjm',
                 NULL,
                 NULL,
                 NULL,
@@ -49,7 +49,7 @@ VALUES
         (
                 '8774fcd7-84c1-4eda-afbf-7cc56902c662',
                 'nguyenminhtuanhn@gmail.com',
-                '$2a$10$QJNs3LeWveuvVa3WX5D14OVcivNjRdTiELEJMZsVLEDBML2oAAofa',
+                '$2a$10$LMiZg/7VBcYV8RC2yHezpO8OmR79nCFpc3a5z9YdbNtdSx40mGPjm',
                 N'Nguyễn Minh',
                 N'Tuấn',
                 NULL,
@@ -59,7 +59,7 @@ VALUES
         (
                 'a226b988-abaf-42f5-b79f-90a6d79efc18',
                 'tranthilan.hcm@gmail.com',
-                '$2a$10$QJNs3LeWveuvVa3WX5D14OVcivNjRdTiELEJMZsVLEDBML2oAAofa',
+                '$2a$10$LMiZg/7VBcYV8RC2yHezpO8OmR79nCFpc3a5z9YdbNtdSx40mGPjm',
                 N'Trần Thị',
                 N'Lan',
                 NULL,
@@ -69,7 +69,7 @@ VALUES
         (
                 '50298a1c-7586-407c-a079-e9091d47e698',
                 'lehoangphuc97@gmail.com',
-                '$2a$10$QJNs3LeWveuvVa3WX5D14OVcivNjRdTiELEJMZsVLEDBML2oAAofa',
+                '$2a$10$LMiZg/7VBcYV8RC2yHezpO8OmR79nCFpc3a5z9YdbNtdSx40mGPjm',
                 N'Lê Hoàng',
                 N'Phúc',
                 NULL,
@@ -79,7 +79,7 @@ VALUES
         (
                 '39548e8b-7022-46df-a028-f83e5778830a',
                 'phamthuydung.hn@gmail.com',
-                '$2a$10$QJNs3LeWveuvVa3WX5D14OVcivNjRdTiELEJMZsVLEDBML2oAAofa',
+                '$2a$10$LMiZg/7VBcYV8RC2yHezpO8OmR79nCFpc3a5z9YdbNtdSx40mGPjm',
                 N'Phạm Thùy',
                 N'Dung',
                 NULL,
@@ -89,7 +89,7 @@ VALUES
         (
                 '3f9c05ba-6bd9-4ad8-93da-41586a58971c',
                 'vuducanh.bk@gmail.com',
-                '$2a$10$QJNs3LeWveuvVa3WX5D14OVcivNjRdTiELEJMZsVLEDBML2oAAofa',
+                '$2a$10$LMiZg/7VBcYV8RC2yHezpO8OmR79nCFpc3a5z9YdbNtdSx40mGPjm',
                 N'Vũ Đức',
                 N'Anh',
                 NULL,
@@ -99,7 +99,7 @@ VALUES
         (
                 '11b65227-8ea6-44c4-b3bd-1f76439aa67e',
                 'tranvanbinh.xe@gmail.com',
-                '$2a$10$QJNs3LeWveuvVa3WX5D14OVcivNjRdTiELEJMZsVLEDBML2oAAofa',
+                '$2a$10$LMiZg/7VBcYV8RC2yHezpO8OmR79nCFpc3a5z9YdbNtdSx40mGPjm',
                 N'Trần Văn',
                 N'Bình',
                 NULL,
@@ -109,7 +109,7 @@ VALUES
         (
                 '4d9078cb-dcf6-475c-b043-ef1e3475fb6f',
                 'nguyenthanhlong.ship@gmail.com',
-                '$2a$10$QJNs3LeWveuvVa3WX5D14OVcivNjRdTiELEJMZsVLEDBML2oAAofa',
+                '$2a$10$LMiZg/7VBcYV8RC2yHezpO8OmR79nCFpc3a5z9YdbNtdSx40mGPjm',
                 N'Nguyễn Thành',
                 N'Long',
                 NULL,
@@ -119,7 +119,7 @@ VALUES
         (
                 '93ebceb4-8402-4c08-ae7f-b73ca366a315',
                 'lequanghai.rider@gmail.com',
-                '$2a$10$QJNs3LeWveuvVa3WX5D14OVcivNjRdTiELEJMZsVLEDBML2oAAofa',
+                '$2a$10$LMiZg/7VBcYV8RC2yHezpO8OmR79nCFpc3a5z9YdbNtdSx40mGPjm',
                 N'Lê Quang',
                 N'Hải',
                 NULL,
@@ -129,7 +129,7 @@ VALUES
         (
                 '8dde8a6d-16e4-4bee-a211-94625d05d98f',
                 'quanphothinhloduchn@gmail.com',
-                '$2a$10$QJNs3LeWveuvVa3WX5D14OVcivNjRdTiELEJMZsVLEDBML2oAAofa',
+                '$2a$10$LMiZg/7VBcYV8RC2yHezpO8OmR79nCFpc3a5z9YdbNtdSx40mGPjm',
                 NULL,
                 NULL,
                 NULL,
@@ -139,7 +139,7 @@ VALUES
         (
                 '1156b32c-fb62-4721-931a-efd7ab467485',
                 'buncharestaurant.hn@gmail.com',
-                '$2a$10$QJNs3LeWveuvVa3WX5D14OVcivNjRdTiELEJMZsVLEDBML2oAAofa',
+                '$2a$10$LMiZg/7VBcYV8RC2yHezpO8OmR79nCFpc3a5z9YdbNtdSx40mGPjm',
                 NULL,
                 NULL,
                 NULL,
@@ -149,7 +149,7 @@ VALUES
         (
                 'd1cf8b00-a37d-4434-973e-b09f1ec05202',
                 'pizzasaigonhouse.hcm@gmail.com',
-                '$2a$10$QJNs3LeWveuvVa3WX5D14OVcivNjRdTiELEJMZsVLEDBML2oAAofa',
+                '$2a$10$LMiZg/7VBcYV8RC2yHezpO8OmR79nCFpc3a5z9YdbNtdSx40mGPjm',
                 NULL,
                 NULL,
                 NULL,
