@@ -5,7 +5,7 @@ import com.fooddelivery.restaurant.domain.entity.DishImage;
 import com.fooddelivery.restaurant.domain.repository.DishImageRepository;
 import com.fooddelivery.restaurant.domain.repository.DishRepository;
 import com.fooddelivery.restaurant.infrastructure.cloud.CloudinaryService;
-import com.fooddelivery.restaurant.infrastructure.persistence.mapper.DishOutputMapper;
+import com.fooddelivery.restaurant.infrastructure.persistence.mapper.DishImageMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -22,7 +22,7 @@ public class UploadDishImagesUseCaseImpl implements UploadDishImagesUseCase {
     private final DishRepository dishRepository;
     private final DishImageRepository dishImageRepository;
     private final CloudinaryService cloudinaryService;
-    private final DishOutputMapper dishOutputMapper;
+    private final DishImageMapper dishImageMapper;
 
     @Override
     public List<DishImageOutput> execute(UUID dishId, MultipartFile[] images) {
@@ -44,7 +44,7 @@ public class UploadDishImagesUseCaseImpl implements UploadDishImagesUseCase {
             String imageUrl = cloudinaryService.upload(imageFile);
             DishImage image = new DishImage(UUID.randomUUID(), dishId, imageUrl, nextOrder++);
             DishImage saved = dishImageRepository.save(image);
-            outputs.add(dishOutputMapper.toDishImageOutput(saved));
+            outputs.add(dishImageMapper.toDishImageOutput(saved));
         }
 
         return outputs;

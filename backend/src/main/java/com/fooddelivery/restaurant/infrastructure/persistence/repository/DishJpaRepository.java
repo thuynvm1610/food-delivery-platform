@@ -12,7 +12,13 @@ import java.util.UUID;
 public interface DishJpaRepository extends JpaRepository<DishJpaEntity, UUID>, JpaSpecificationExecutor<DishJpaEntity> {
 
     @Modifying(flushAutomatically = true, clearAutomatically = true)
-    @Query(value = "update dishes set is_available = :isAvailable where id = :dishId", nativeQuery = true)
-    int updateAvailability(@Param("dishId") UUID dishId, @Param("isAvailable") boolean isAvailable);
-
+    @Query("""
+            UPDATE DishJpaEntity d
+            SET d.isAvailable = :isAvailable
+            WHERE d.id = :dishId
+            """)
+    int updateAvailability(
+            @Param("dishId") UUID dishId,
+            @Param("isAvailable") boolean isAvailable
+    );
 }

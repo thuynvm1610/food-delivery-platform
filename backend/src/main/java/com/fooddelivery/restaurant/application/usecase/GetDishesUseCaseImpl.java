@@ -4,7 +4,7 @@ import com.fooddelivery.restaurant.application.input.GetDishesInput;
 import com.fooddelivery.restaurant.application.output.DishOutput;
 import com.fooddelivery.restaurant.domain.aggregate.Dish;
 import com.fooddelivery.restaurant.domain.repository.DishRepository;
-import com.fooddelivery.restaurant.infrastructure.persistence.mapper.DishOutputMapper;
+import com.fooddelivery.restaurant.infrastructure.persistence.mapper.DishMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -22,19 +22,23 @@ import java.util.UUID;
 public class GetDishesUseCaseImpl implements GetDishesUseCase {
 
     private final DishRepository dishRepository;
-    private final DishOutputMapper dishOutputMapper;
+    private final DishMapper dishMapper;
 
     @Override
     public Page<DishOutput> execute(UUID restaurantId, GetDishesInput input) {
         int page = (input != null && input.getPage() != null && input.getPage() > 0) ? input.getPage() : 1;
-        int limit = (input != null && input.getLimit() != null && input.getLimit() > 0) ? input.getLimit() : 4;
+        int limit = (input != null && input.getLimit() != null && input.getLimit() > 0) ? input.getLimit() : 5;
         String search = (input != null && input.getSearch() != null && !input.getSearch().isBlank())
                 ? input.getSearch().trim()
                 : null;
         BigDecimal minPrice = input != null ? input.getMinPrice() : null;
         BigDecimal maxPrice = input != null ? input.getMaxPrice() : null;
 
-        Pageable pageable = PageRequest.of(Math.max(0, page - 1), limit, Sort.by("name").ascending());
+        Pageable pageable = PageRequest.of(
+                Math.max(0, page - 1),
+                limit,
+                Sort.by(Sort.Order.desc("createdAt"))
+        );
 
         Page<Dish> paged;
         List<UUID> categoryIds = resolveCategoryIds(input);
@@ -44,7 +48,7 @@ public class GetDishesUseCaseImpl implements GetDishesUseCase {
             paged = dishRepository.findByRestaurantId(restaurantId, pageable, search, minPrice, maxPrice);
         }
 
-        List<DishOutput> outputs = paged.getContent().stream().map(dishOutputMapper::toDishOutput).toList();
+        List<DishOutput> outputs = paged.getContent().stream().map(dishMapper::toDishOutput).toList();
         return new PageImpl<>(outputs, pageable, paged.getTotalElements());
     }
 

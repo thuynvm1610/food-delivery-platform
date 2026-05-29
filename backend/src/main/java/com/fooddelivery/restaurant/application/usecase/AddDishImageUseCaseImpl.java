@@ -6,7 +6,7 @@ import com.fooddelivery.restaurant.domain.aggregate.Dish;
 import com.fooddelivery.restaurant.domain.entity.DishImage;
 import com.fooddelivery.restaurant.domain.repository.DishImageRepository;
 import com.fooddelivery.restaurant.domain.repository.DishRepository;
-import com.fooddelivery.restaurant.infrastructure.persistence.mapper.DishOutputMapper;
+import com.fooddelivery.restaurant.infrastructure.persistence.mapper.DishImageMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -18,11 +18,11 @@ public class AddDishImageUseCaseImpl implements AddDishImageUseCase {
 
     private final DishRepository dishRepository;
     private final DishImageRepository dishImageRepository;
-    private final DishOutputMapper dishOutputMapper;
+    private final DishImageMapper dishImageMapper;
 
     @Override
     public DishImageOutput execute(UUID dishId, AddDishImageInput input) {
-        Dish dish = dishRepository.findById(dishId)
+        dishRepository.findById(dishId)
                 .orElseThrow(() -> new RuntimeException("Dish not found with id: " + dishId));
 
         DishImage image = new DishImage(
@@ -33,6 +33,6 @@ public class AddDishImageUseCaseImpl implements AddDishImageUseCase {
         );
 
         DishImage saved = dishImageRepository.save(image);
-        return dishOutputMapper.toDishImageOutput(saved);
+        return dishImageMapper.toDishImageOutput(saved);
     }
 }

@@ -4,7 +4,7 @@ import com.fooddelivery.restaurant.application.input.UpdateRestaurantProfileInpu
 import com.fooddelivery.restaurant.application.output.RestaurantProfileOutput;
 import com.fooddelivery.restaurant.domain.aggregate.Restaurant;
 import com.fooddelivery.restaurant.domain.repository.RestaurantRepository;
-import com.fooddelivery.restaurant.infrastructure.persistence.mapper.RestaurantProfileMapper;
+import com.fooddelivery.restaurant.infrastructure.persistence.mapper.RestaurantMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -15,7 +15,7 @@ import java.util.UUID;
 public class UpdateRestaurantProfileUseCaseImpl implements UpdateRestaurantProfileUseCase {
 
     private final RestaurantRepository restaurantRepository;
-    private final RestaurantProfileMapper restaurantProfileMapper;
+    private final RestaurantMapper restaurantMapper;
 
     @Override
     public RestaurantProfileOutput execute(UUID restaurantId, UpdateRestaurantProfileInput input) {
@@ -34,6 +34,6 @@ public class UpdateRestaurantProfileUseCaseImpl implements UpdateRestaurantProfi
 
         restaurantRepository.save(restaurant);
 
-        return restaurantProfileMapper.toRestaurantProfileOutput(restaurant);
+        return restaurantMapper.toRestaurantProfileOutput(restaurant);
     }
 }

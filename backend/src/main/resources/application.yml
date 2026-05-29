@@ -1,6 +1,10 @@
 spring:
   application:
     name: food-delivery-backend
+  servlet:
+    multipart:
+      max-file-size: 20MB
+      max-request-size: 100MB
   datasource:
     url: jdbc:postgresql://localhost:5432/food_delivery
     username: postgres

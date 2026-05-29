@@ -6,7 +6,7 @@ import com.fooddelivery.restaurant.domain.aggregate.Dish;
 import com.fooddelivery.restaurant.domain.aggregate.DishCategory;
 import com.fooddelivery.restaurant.domain.repository.DishCategoryRepository;
 import com.fooddelivery.restaurant.domain.repository.DishRepository;
-import com.fooddelivery.restaurant.infrastructure.persistence.mapper.DishOutputMapper;
+import com.fooddelivery.restaurant.infrastructure.persistence.mapper.DishMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -20,7 +20,7 @@ public class UpdateDishUseCaseImpl implements UpdateDishUseCase {
 
     private final DishRepository dishRepository;
     private final DishCategoryRepository dishCategoryRepository;
-    private final DishOutputMapper dishOutputMapper;
+    private final DishMapper dishMapper;
 
     @Override
     public DishOutput execute(UUID dishId, UpdateDishInput input) {
@@ -38,7 +38,7 @@ public class UpdateDishUseCaseImpl implements UpdateDishUseCase {
         }
 
         Dish updated = dishRepository.save(dish);
-        return dishOutputMapper.toDishOutput(updated);
+        return dishMapper.toDishOutput(updated);
     }
 
     private List<DishCategory> resolveCategories(List<UUID> categoryIds) {

@@ -1,27 +1,24 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { useOrder } from '../../context/OrderContext';
-import { useRestaurant } from '../../context/RestaurantContext';
 import { StatusBadge } from '../../components/common/StatusBadge';
 import { ActionButton } from '../../components/common/ActionButton';
 import { FilterBar } from '../../components/common/FilterBar';
-import { Toast } from '../../components/common/Toast';
+import { notifyError, notifySuccess } from '../../utils/notify';
 import type { OrderStatus } from '../../types/restaurant';
 
 export const RestaurantOrders: React.FC = () => {
   const { orders, loading, error, filters, loadOrders, setFilters, confirmOrder, startPreparing, markReady, cancelOrder, clearError } = useOrder();
-  const { restaurant } = useRestaurant();
-  const [toastMessage, setToastMessage] = useState<string | null>(null);
 
   useEffect(() => {
     loadOrders().catch(() => {});
   }, []);
 
-  // WebSocket connection
   useEffect(() => {
-    if (restaurant?.id) {
-      // connectWebSocket(restaurant.id); // TODO: Enable after WebSocket is implemented
+    if (error) {
+      notifyError(error);
+      clearError();
     }
-  }, [restaurant?.id]);
+  }, [error, clearError]);
 
   const handleStatusFilter = (status: OrderStatus) => {
     setFilters({ ...filters, status, page: 1 });
@@ -31,9 +28,9 @@ export const RestaurantOrders: React.FC = () => {
   const handleActionClick = async (action: () => Promise<void>, message: string) => {
     try {
       await action();
-      setToastMessage(`✓ ${message}`);
+      notifySuccess(message);
     } catch (err: any) {
-      setToastMessage(`✕ ${err.message || 'Có lỗi xảy ra'}`);
+      notifyError(err?.message || 'Có lỗi xảy ra');
     }
   };
 
@@ -53,23 +50,6 @@ export const RestaurantOrders: React.FC = () => {
         <p className="text-gray-600 mt-1">Xác nhận, nấu, và hoàn thành đơn hàng</p>
       </div>
 
-      {error && (
-        <Toast
-          message={error}
-          type="error"
-          onClose={clearError}
-        />
-      )}
-
-      {toastMessage && (
-        <Toast
-          message={toastMessage}
-          type={toastMessage.includes('✓') ? 'success' : 'error'}
-          onClose={() => setToastMessage(null)}
-        />
-      )}
-
-      {/* Filters */}
       <FilterBar
         filters={filters}
         onFilterChange={(key, value) => {
@@ -87,7 +67,6 @@ export const RestaurantOrders: React.FC = () => {
         ]}
       />
 
-      {/* Orders List */}
       <div className="space-y-4">
         {loading ? (
           <div className="text-center py-12">Loading...</div>
@@ -97,21 +76,18 @@ export const RestaurantOrders: React.FC = () => {
           </div>
         ) : (
           orders.map(order => (
-            <div
-              key={order.id}
-              className="bg-white rounded-lg shadow p-4 transition"
-            >
-              <div className="flex justify-between items-start mb-3">
+            <div key={order.id} className="bg-white rounded-2xl shadow-sm p-5 transition hover:shadow-md">
+              <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between mb-3">
                 <div>
                   <p className="font-bold text-gray-900">Đơn #{order.id.slice(0, 8)}</p>
-                  <p className="text-sm text-gray-500">{new Date(order.createdAt).toLocaleString('vi-VN')}</p>
+                  <p className="text-sm text-gray-500">{new Date(order.createdAt).toLocaleDateString('vi-VN')} {new Date(order.createdAt).toLocaleTimeString('vi-VN')}</p>
                 </div>
                 <StatusBadge status={order.status} />
               </div>
 
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 py-3 border-y">
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 py-3 border-y border-slate-200">
                 <div>
-                  <p className="text-xs text-gray-500">Số mon</p>
+                  <p className="text-xs text-gray-500">Số món</p>
                   <p className="font-semibold">{order.items.length}</p>
                 </div>
                 <div>
@@ -128,8 +104,7 @@ export const RestaurantOrders: React.FC = () => {
                 </div>
               </div>
 
-              {/* Action Buttons */}
-              <div className="flex gap-2 mt-3 flex-wrap">
+              <div className="flex flex-wrap gap-2 mt-3">
                 {order.status === 'PENDING' && (
                   <ActionButton
                     label="Xác nhận"

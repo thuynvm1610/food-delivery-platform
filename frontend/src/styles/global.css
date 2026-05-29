@@ -1,3 +1,5 @@
+@import "tailwindcss";
+
 :root {
   --bg: #f6f3ee;
   --bg-accent: linear-gradient(135deg, rgba(232, 93, 4, 0.08), rgba(255, 255, 255, 0));
@@ -34,7 +36,7 @@ a {
 }
 
 a:hover {
-  text-decoration: underline;
+  text-decoration: none;
 }
 
 .page-center {

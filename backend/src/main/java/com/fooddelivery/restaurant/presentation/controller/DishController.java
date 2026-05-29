@@ -6,12 +6,12 @@ import com.fooddelivery.restaurant.application.input.CreateDishInput;
 import com.fooddelivery.restaurant.application.input.GetDishesInput;
 import com.fooddelivery.restaurant.application.input.UpdateDishInput;
 import com.fooddelivery.restaurant.application.output.DishImageOutput;
-import com.fooddelivery.restaurant.application.output.DishCategoryOutput;
 import com.fooddelivery.restaurant.application.output.DishOutput;
 import com.fooddelivery.restaurant.application.usecase.*;
 import com.fooddelivery.restaurant.domain.repository.RestaurantRepository;
+import com.fooddelivery.restaurant.infrastructure.persistence.mapper.DishImageMapper;
+import com.fooddelivery.restaurant.infrastructure.persistence.mapper.DishMapper;
 import com.fooddelivery.restaurant.presentation.request.*;
-import com.fooddelivery.restaurant.presentation.response.DishCategoryResponse;
 import com.fooddelivery.restaurant.presentation.response.DishImageResponse;
 import com.fooddelivery.restaurant.presentation.response.DishResponse;
 import com.fooddelivery.shared.web.BaseResponse;
@@ -44,9 +44,11 @@ public class DishController {
     private final AddDishImageUseCase addDishImageUseCase;
     private final UploadDishImagesUseCase uploadDishImagesUseCase;
     private final DeleteDishImageUseCase deleteDishImageUseCase;
-    private final ReorderDishImagesUseCase reorderDishImagesUseCase;
 
     private final RestaurantRepository restaurantRepository;
+
+    private final DishMapper dishMapper;
+    private final DishImageMapper dishImageMapper;
 
     // GET /api/v1/restaurants/me/dishes
     @GetMapping("/me/dishes")
@@ -65,7 +67,7 @@ public class DishController {
         input.setMaxPrice(request.getMaxPrice());
 
         Page<DishOutput> paginatedDishes = getDishesUseCase.execute(restaurantId, input);
-        var responses = paginatedDishes.getContent().stream().map(this::mapToDishResponse).toList();
+        var responses = paginatedDishes.getContent().stream().map(dishMapper::mapToDishResponse).toList();
         Page<DishResponse> responsePage = new PageImpl<>(responses, paginatedDishes.getPageable(), paginatedDishes.getTotalElements());
 
         return ResponseEntity.ok(BaseResponse.success(responsePage));
@@ -87,7 +89,7 @@ public class DishController {
         input.setCategoryIds(request.getCategoryIds());
 
         DishOutput output = createDishUseCase.execute(restaurantId, input);
-        DishResponse response = mapToDishResponse(output);
+        DishResponse response = dishMapper.mapToDishResponse(output);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(BaseResponse.success(response));
     }
@@ -100,7 +102,7 @@ public class DishController {
         verifyDishBelongsToRestaurant(id, user);
 
         DishOutput output = getDishByIdUseCase.execute(id);
-        DishResponse response = mapToDishResponse(output);
+        DishResponse response = dishMapper.mapToDishResponse(output);
 
         return ResponseEntity.ok(BaseResponse.success(response));
     }
@@ -122,7 +124,7 @@ public class DishController {
         input.setCategoryIds(request.getCategoryIds());
 
         DishOutput output = updateDishUseCase.execute(id, input);
-        DishResponse response = mapToDishResponse(output);
+        DishResponse response = dishMapper.mapToDishResponse(output);
 
         return ResponseEntity.ok(BaseResponse.success(response));
     }
@@ -155,7 +157,7 @@ public class DishController {
         }
 
         DishOutput output = updateDishAvailabilityUseCase.execute(id, resolvedIsAvailable);
-        DishResponse response = mapToDishResponse(output);
+        DishResponse response = dishMapper.mapToDishResponse(output);
 
         return ResponseEntity.ok(BaseResponse.success(response));
     }
@@ -171,7 +173,7 @@ public class DishController {
         input.setDisplayOrder(request.getDisplayOrder());
 
         DishImageOutput output = addDishImageUseCase.execute(id, input);
-        DishImageResponse response = mapToDishImageResponse(output);
+        DishImageResponse response = dishImageMapper.mapToDishImageResponse(output);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(BaseResponse.success(response));
     }
@@ -186,7 +188,7 @@ public class DishController {
 
         List<DishImageOutput> outputs = uploadDishImagesUseCase.execute(id, images);
         List<DishImageResponse> responses = outputs.stream()
-                .map(this::mapToDishImageResponse)
+                .map(dishImageMapper::mapToDishImageResponse)
                 .collect(Collectors.toList());
 
         return ResponseEntity.status(HttpStatus.CREATED).body(BaseResponse.success(responses));
@@ -208,22 +210,6 @@ public class DishController {
         return ResponseEntity.ok(BaseResponse.success(null));
     }
 
-    // PUT /api/v1/restaurants/me/dishes/{id}/images/reorder
-    @PutMapping("/me/dishes/{id}/images/reorder")
-    public ResponseEntity<BaseResponse<List<DishImageResponse>>> reorderDishImages(
-            @AuthenticationPrincipal AuthenticatedUser user,
-            @PathVariable UUID id,
-            @Valid @RequestBody ReorderImagesRequest request) {
-        verifyDishBelongsToRestaurant(id, user);
-
-        List<DishImageOutput> outputs = reorderDishImagesUseCase.execute(id, request.getImageIds());
-        List<DishImageResponse> responses = outputs.stream()
-                .map(this::mapToDishImageResponse)
-                .collect(Collectors.toList());
-
-        return ResponseEntity.ok(BaseResponse.success(responses));
-    }
-
     // Helper methods
     private UUID getRestaurantIdFromUser(AuthenticatedUser user) {
         return restaurantRepository.findByOwnerId(user.userId())
@@ -238,48 +224,5 @@ public class DishController {
         if (!dish.getRestaurantId().equals(restaurantId)) {
             throw new RuntimeException("Unauthorized: Dish does not belong to your restaurant");
         }
-    }
-
-    private DishResponse mapToDishResponse(DishOutput output) {
-        DishResponse response = new DishResponse();
-        response.setId(output.getId());
-        response.setRestaurantId(output.getRestaurantId());
-        response.setName(output.getName());
-        response.setDescription(output.getDescription());
-        response.setPriceAmount(output.getPriceAmount());
-        response.setPriceCurrency(output.getPriceCurrency());
-        response.setAvailable(output.isAvailable());
-        response.setCreatedAt(output.getCreatedAt());
-
-        if (output.getImages() != null) {
-            response.setImages(output.getImages().stream()
-                    .map(this::mapToDishImageResponse)
-                    .collect(Collectors.toList()));
-        }
-
-        if (output.getCategories() != null) {
-            response.setCategories(output.getCategories().stream()
-                    .map(this::mapToDishCategoryResponse)
-                    .collect(Collectors.toList()));
-        }
-
-        return response;
-    }
-
-    private DishImageResponse mapToDishImageResponse(DishImageOutput output) {
-        DishImageResponse response = new DishImageResponse();
-        response.setId(output.getId());
-        response.setDishId(output.getDishId());
-        response.setImageUrl(output.getImageUrl());
-        response.setDisplayOrder(output.getDisplayOrder());
-        return response;
-    }
-
-    private DishCategoryResponse mapToDishCategoryResponse(DishCategoryOutput output) {
-        DishCategoryResponse response = new DishCategoryResponse();
-        response.setId(output.getId());
-        response.setName(output.getName());
-        response.setDescription(output.getDescription());
-        return response;
     }
 }

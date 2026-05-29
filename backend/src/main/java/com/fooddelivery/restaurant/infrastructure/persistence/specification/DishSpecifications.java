@@ -26,6 +26,7 @@ public final class DishSpecifications {
             }
 
             Join<DishJpaEntity, DishCategoryJpaMapping> mapping = root.join("categoryMappings", JoinType.INNER);
+            assert query != null;
             query.distinct(true);
             return mapping.get("id").get("categoryId").in(categoryIds);
         };

@@ -1,5 +1,5 @@
 import { Navigate, Route, Routes } from 'react-router-dom';
-import PublicLayout from '../layouts/PublicLayout';
+import PublicLayout from '../layouts/PublicLayout.tsx';
 import DashboardLayout from '../layouts/DashboardLayout';
 import { RestaurantLayout } from '../layouts/RestaurantLayout';
 import HomePage from '../pages/public/HomePage';

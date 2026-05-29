@@ -12,6 +12,7 @@ import {
   IconLogout,
   IconMenu2,
   IconPizza,
+  IconChevronLeft,
 } from '@tabler/icons-react';
 import { useAuth } from '../context/AuthContext';
 import { useRestaurant } from '../context/RestaurantContext';
@@ -25,44 +26,53 @@ interface RestaurantLayoutProps {
 }
 
 const navItems = [
-  { path: '/dashboard/home', label: 'Tổng quan', Icon: IconLayoutDashboard },
-  { path: '/dashboard/orders', label: 'Đơn hàng', Icon: IconPackage },
-  { path: '/dashboard/menu', label: 'Menu', Icon: IconToolsKitchen2 },
-  { path: '/dashboard/profile', label: 'Hồ sơ', Icon: IconBuildingStore },
-  { path: '/dashboard/operating-hours', label: 'Giờ hoạt động', Icon: IconClock },
-  { path: '/dashboard/vouchers', label: 'Khuyến mãi', Icon: IconTicket },
-  { path: '/dashboard/revenue', label: 'Doanh thu', Icon: IconCoin },
-  { path: '/dashboard/reviews', label: 'Đánh giá', Icon: IconStar },
+  { path: '/dashboard/home', label: 'Tổng quan', Icon: IconLayoutDashboard, color: '#fb923c' },
+  { path: '/dashboard/orders', label: 'Đơn hàng', Icon: IconPackage, color: '#60a5fa' },
+  { path: '/dashboard/menu', label: 'Menu', Icon: IconToolsKitchen2, color: '#34d399' },
+  { path: '/dashboard/profile', label: 'Hồ sơ', Icon: IconBuildingStore, color: '#a78bfa' },
+  { path: '/dashboard/operating-hours', label: 'Giờ hoạt động', Icon: IconClock, color: '#fbbf24' },
+  { path: '/dashboard/vouchers', label: 'Khuyến mãi', Icon: IconTicket, color: '#f472b6' },
+  { path: '/dashboard/revenue', label: 'Doanh thu', Icon: IconCoin, color: '#4ade80' },
+  { path: '/dashboard/reviews', label: 'Đánh giá', Icon: IconStar, color: '#facc15' },
 ];
 
 const RestaurantTopBar: React.FC = () => {
   const { restaurant } = useRestaurant();
+  const [time, setTime] = React.useState(new Date());
+
+  React.useEffect(() => {
+    const t = setInterval(() => setTime(new Date()), 60_000);
+    return () => clearInterval(t);
+  }, []);
 
   return (
-    <div
-      style={{
-        background: '#fff',
-        borderBottom: '1px solid #e5e7eb',
-        padding: '14px 32px',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        flexShrink: 0,
-      }}
-    >
+    <div className="flex items-center justify-between gap-3 border-b border-slate-200/80 bg-white/90 backdrop-blur-sm px-7 py-4 shadow-sm">
       <div>
-        <p style={{ fontSize: 12, color: '#9ca3af', margin: '0 0 2px' }}>Xin chào,</p>
-        <h2 style={{ fontSize: 17, fontWeight: 600, color: '#111827', margin: 0 }}>
+        <p className="text-[10px] font-semibold uppercase tracking-[0.25em] text-slate-400">Xin chào,</p>
+        <h2 className="mt-0.5 text-base font-bold text-slate-900 tracking-tight">
           {restaurant?.name || '—'}
         </h2>
       </div>
-      <div style={{ textAlign: 'right' }}>
-        <p style={{ fontSize: 13, color: '#6b7280', margin: '0 0 2px' }}>
-          {new Date().toLocaleDateString('vi-VN')}
-        </p>
-        <p style={{ fontSize: 13, color: '#6b7280', margin: 0 }}>
-          {new Date().toLocaleTimeString('vi-VN')}
-        </p>
+
+      <div className="flex items-center gap-5">
+        <div className="flex items-center gap-2">
+          <span className={`relative flex h-2.5 w-2.5`}>
+            {restaurant?.status === 'OPEN' && (
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+            )}
+            <span className={`relative inline-flex rounded-full h-2.5 w-2.5 ${restaurant?.status === 'OPEN' ? 'bg-emerald-500' : 'bg-slate-400'}`} />
+          </span>
+          <span className={`text-sm font-semibold ${restaurant?.status === 'OPEN' ? 'text-emerald-700' : 'text-slate-500'}`}>
+            {restaurant?.status === 'OPEN' ? 'Đang mở cửa' : 'Đã đóng cửa'}
+          </span>
+        </div>
+        <div className="h-8 w-px bg-slate-200" />
+        <div className="text-right">
+          <p className="text-sm font-bold text-slate-900">
+            {time.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })}
+          </p>
+          <p className="text-[11px] text-slate-400">{time.toLocaleDateString('vi-VN', { weekday: 'short', day: '2-digit', month: '2-digit', year: 'numeric' })}</p>
+        </div>
       </div>
     </div>
   );
@@ -71,143 +81,154 @@ const RestaurantTopBar: React.FC = () => {
 export const RestaurantLayout: React.FC<RestaurantLayoutProps> = ({ children }) => {
   const { user, logout } = useAuth();
   const location = useLocation();
-  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [open, setOpen] = useState(true);
 
   return (
     <RestaurantProvider>
       <OrderProvider>
         <MenuProvider>
           <DashboardProvider>
-            <div style={{ display: 'flex', height: '100vh', background: '#f3f4f6', overflow: 'hidden' }}>
-
-              {/* ── Sidebar ── */}
-              <div
+            <div className="flex h-screen overflow-hidden bg-slate-100">
+              {/* Sidebar */}
+              <aside
+                className={`relative flex flex-col shadow-2xl transition-[width] duration-300 ease-in-out ${open ? 'w-[220px]' : 'w-[64px]'}`}
                 style={{
-                  width: sidebarOpen ? 240 : 64,
-                  background: '#111827',
-                  color: '#fff',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  transition: 'width 0.25s ease',
-                  overflow: 'hidden',
-                  flexShrink: 0,
+                  background: 'linear-gradient(165deg, #0f172a 0%, #1e1b4b 40%, #1a0a2e 100%)',
                 }}
               >
-                {/* Logo row */}
-                <div
-                  style={{
-                    padding: '16px 12px',
-                    borderBottom: '1px solid #1f2937',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: sidebarOpen ? 'space-between' : 'center',
-                    minHeight: 60,
-                  }}
-                >
-                  {sidebarOpen && (
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                      <IconPizza size={22} strokeWidth={1.75} color="#f97316" />
-                      <span style={{ fontWeight: 700, fontSize: 16, whiteSpace: 'nowrap' }}>RestaurantHub</span>
+                {/* Decorative glow blobs */}
+                <div style={{
+                  position: 'absolute', top: -40, left: -40, width: 160, height: 160,
+                  borderRadius: '50%',
+                  background: 'radial-gradient(circle, rgba(251,146,60,0.18) 0%, transparent 70%)',
+                  pointerEvents: 'none',
+                }} />
+                <div style={{
+                  position: 'absolute', bottom: 80, right: -30, width: 120, height: 120,
+                  borderRadius: '50%',
+                  background: 'radial-gradient(circle, rgba(139,92,246,0.15) 0%, transparent 70%)',
+                  pointerEvents: 'none',
+                }} />
+
+                {/* Logo area */}
+                <div className="flex items-center justify-between gap-2 p-3 border-b border-white/10">
+                  {open && (
+                    <div className="flex items-center gap-2.5">
+                      <div style={{
+                        width: 38, height: 38, borderRadius: 12,
+                        background: 'linear-gradient(135deg, #f97316, #dc2626)',
+                        boxShadow: '0 4px 14px rgba(249,115,22,0.4)',
+                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        flexShrink: 0,
+                      }}>
+                        <IconPizza size={18} strokeWidth={2} color="#fff" />
+                      </div>
+                      <div>
+                        <p className="text-[13px] font-bold text-white leading-tight">RestaurantHub</p>
+                        <p className="text-[9px] text-white/40 font-medium uppercase tracking-wider">Dashboard</p>
+                      </div>
                     </div>
                   )}
                   <button
-                    onClick={() => setSidebarOpen(v => !v)}
-                    style={{
-                      background: 'none',
-                      border: 'none',
-                      color: '#9ca3af',
-                      cursor: 'pointer',
-                      padding: 4,
-                      borderRadius: 6,
-                      display: 'flex',
-                      alignItems: 'center',
-                    }}
+                    type="button"
+                    onClick={() => setOpen((v) => !v)}
+                    className="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-white/10 bg-white/5 text-white/60 transition hover:bg-white/15 hover:text-white"
                     aria-label="Toggle sidebar"
                   >
-                    <IconMenu2 size={20} strokeWidth={1.75} />
+                    {open ? <IconChevronLeft size={16} strokeWidth={2} /> : <IconMenu2 size={16} strokeWidth={2} />}
                   </button>
                 </div>
 
-                {/* Nav links */}
-                <nav style={{ flex: 1, padding: '12px 8px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: 2 }}>
-                  {navItems.map(({ path, label, Icon }) => {
+                {/* Nav */}
+                <nav className="flex flex-1 flex-col gap-1 overflow-y-auto p-2.5 pb-4">
+                  {open && (
+                    <p className="px-2 pt-2 pb-1 text-[9px] font-bold uppercase tracking-[0.2em] text-white/25">
+                      Navigation
+                    </p>
+                  )}
+                  {navItems.map(({ path, label, Icon, color }) => {
                     const isActive = location.pathname === path;
                     return (
                       <Link
                         key={path}
                         to={path}
                         title={label}
+                        className={`group relative flex items-center gap-3 rounded-xl px-2.5 py-2.5 text-[13px] font-medium transition-all duration-150 ${open ? 'justify-start' : 'justify-center'
+                          }`}
                         style={{
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: 10,
-                          padding: sidebarOpen ? '10px 12px' : '10px 0',
-                          justifyContent: sidebarOpen ? 'flex-start' : 'center',
-                          borderRadius: 8,
-                          textDecoration: 'none',
-                          fontSize: 14,
-                          fontWeight: isActive ? 600 : 400,
-                          background: isActive ? '#2563eb' : 'transparent',
-                          color: isActive ? '#fff' : '#9ca3af',
-                          transition: 'background 0.15s, color 0.15s',
-                          whiteSpace: 'nowrap',
-                          overflow: 'hidden',
+                          background: isActive
+                            ? `linear-gradient(135deg, ${color}22, ${color}12)`
+                            : 'transparent',
+                          color: isActive ? color : 'rgba(255,255,255,0.5)',
+                          border: isActive ? `1px solid ${color}30` : '1px solid transparent',
                         }}
-                        onMouseEnter={e => { if (!isActive) (e.currentTarget as HTMLElement).style.background = '#1f2937'; (e.currentTarget as HTMLElement).style.color = '#fff'; }}
-                        onMouseLeave={e => { if (!isActive) { (e.currentTarget as HTMLElement).style.background = 'transparent'; (e.currentTarget as HTMLElement).style.color = '#9ca3af'; } }}
+                        onMouseEnter={e => {
+                          if (!isActive) {
+                            (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.07)';
+                            (e.currentTarget as HTMLElement).style.color = '#fff';
+                          }
+                        }}
+                        onMouseLeave={e => {
+                          if (!isActive) {
+                            (e.currentTarget as HTMLElement).style.background = 'transparent';
+                            (e.currentTarget as HTMLElement).style.color = 'rgba(255,255,255,0.5)';
+                          }
+                        }}
                       >
-                        <Icon size={18} strokeWidth={1.75} style={{ flexShrink: 0 }} />
-                        {sidebarOpen && <span>{label}</span>}
+                        {/* Icon with colored bg when active */}
+                        <span
+                          className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg transition-all"
+                          style={{
+                            background: isActive ? `${color}25` : 'transparent',
+                            color: isActive ? color : 'inherit',
+                          }}
+                        >
+                          <Icon size={16} strokeWidth={isActive ? 2.2 : 1.75} />
+                        </span>
+                        {open && <span className="truncate">{label}</span>}
+                        {open && isActive && (
+                          <span
+                            className="ml-auto h-1.5 w-1.5 rounded-full"
+                            style={{ background: color, boxShadow: `0 0 6px ${color}` }}
+                          />
+                        )}
+                        {/* Tooltip when collapsed */}
+                        {!open && (
+                          <span className="pointer-events-none absolute left-full ml-2 z-50 whitespace-nowrap rounded-lg bg-slate-900 px-2.5 py-1.5 text-xs font-medium text-white opacity-0 shadow-xl transition-opacity group-hover:opacity-100 border border-white/10">
+                            {label}
+                          </span>
+                        )}
                       </Link>
                     );
                   })}
                 </nav>
 
-                {/* Logout */}
-                <div style={{ padding: '12px 8px', borderTop: '1px solid #1f2937' }}>
+                {/* Footer */}
+                <div className="border-t border-white/10 p-2.5">
+                  {open && user?.email && (
+                    <div className="mb-2 rounded-xl bg-white/5 border border-white/10 px-3 py-2.5">
+                      <p className="text-[9px] uppercase tracking-[0.2em] text-white/30 font-bold">Tài khoản</p>
+                      <p className="mt-0.5 truncate text-[12px] text-white/70">{user.email}</p>
+                    </div>
+                  )}
                   <button
                     onClick={() => logout()}
-                    style={{
-                      width: '100%',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: sidebarOpen ? 'flex-start' : 'center',
-                      gap: 8,
-                      padding: '10px 12px',
-                      borderRadius: 8,
-                      border: 'none',
-                      background: 'transparent',
-                      color: '#f87171',
-                      cursor: 'pointer',
-                      fontSize: 14,
-                      fontWeight: 500,
-                      transition: 'background 0.15s',
-                    }}
-                    onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = '#1f2937'; }}
-                    onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
+                    className={`group flex w-full items-center gap-3 rounded-xl px-2.5 py-2.5 text-[13px] font-medium transition-all ${open ? 'justify-start' : 'justify-center'
+                      } text-rose-400/70 hover:bg-rose-500/10 hover:text-rose-300 border border-transparent hover:border-rose-500/20`}
                   >
-                    <IconLogout size={18} strokeWidth={1.75} style={{ flexShrink: 0 }} />
-                    {sidebarOpen && <span>Đăng xuất</span>}
+                    <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg">
+                      <IconLogout size={16} strokeWidth={1.75} />
+                    </span>
+                    {open && <span>Đăng xuất</span>}
                   </button>
-                  {sidebarOpen && (
-                    <p style={{ fontSize: 11, color: '#6b7280', marginTop: 8, paddingLeft: 12, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                      {user?.email}
-                    </p>
-                  )}
                 </div>
-              </div>
+              </aside>
 
-              {/* ── Main area ── */}
-              <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden', minWidth: 0 }}>
-                {/* Top bar */}
+              {/* Main */}
+              <main className="flex min-h-screen flex-1 flex-col overflow-hidden">
                 <RestaurantTopBar />
-
-                {/* Page content */}
-                <div style={{ flex: 1, overflowY: 'auto', padding: '32px' }}>
-                  {children}
-                </div>
-              </div>
-
+                <div className="flex-1 overflow-y-auto bg-slate-50 p-6 pt-5.5 md:p-7 md:pt-4">{children}</div>
+              </main>
             </div>
           </DashboardProvider>
         </MenuProvider>

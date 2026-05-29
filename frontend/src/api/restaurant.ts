@@ -39,9 +39,7 @@ export const restaurantApi = {
 
   // Images
   uploadRestaurantImages: (formData: FormData) =>
-    apiClient.post<BaseResponse<RestaurantImage[]>>('/restaurants/me/images', formData, {
-      headers: { 'Content-Type': 'multipart/form-data' },
-    }),
+    apiClient.post<BaseResponse<RestaurantImage[]>>('/restaurants/me/images', formData),
 
   deleteRestaurantImage: (imageId: string) =>
     apiClient.delete<BaseResponse<void>>(`/restaurants/me/images/${imageId}`),
@@ -112,8 +110,7 @@ export const restaurantApi = {
   uploadDishImages: (dishId: string, formData: FormData) =>
     apiClient.post<BaseResponse<DishImage[]>>(
       `/restaurants/me/dishes/${dishId}/images`,
-      formData,
-      { headers: { 'Content-Type': 'multipart/form-data' } }
+      formData
     ),
 
   deleteDishImage: (dishId: string, imageId: string) =>

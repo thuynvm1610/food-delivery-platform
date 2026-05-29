@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useCallback } from 'react';
+import React, { createContext, useContext, useState, useCallback, useEffect, useRef } from 'react';
 import { restaurantApi } from '../api/restaurant';
 import type { Dish, DishCategory, DishUpsertPayload } from '../types/restaurant';
 
@@ -48,8 +48,13 @@ export const MenuProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [selectedDish, setSelectedDish] = useState<Dish | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [filters, setFiltersState] = useState({ categoryIds: [] as string[], search: undefined as string | undefined, page: 1, limit: 4, minPrice: undefined as number | undefined, maxPrice: undefined as number | undefined });
-  const [pagination, setPagination] = useState<PaginationState>({ page: 1, limit: 4, totalItems: 0, totalPages: 1 });
+  const [filters, setFiltersState] = useState({ categoryIds: [] as string[], search: undefined as string | undefined, page: 1, limit: 5, minPrice: undefined as number | undefined, maxPrice: undefined as number | undefined });
+  const [pagination, setPagination] = useState<PaginationState>({ page: 1, limit: 5, totalItems: 0, totalPages: 1 });
+  const filtersRef = useRef(filters);
+
+  useEffect(() => {
+    filtersRef.current = filters;
+  }, [filters]);
 
   const setFilters = useCallback((newFilters: Partial<{ categoryIds?: string[]; search?: string; page?: number; limit?: number; minPrice?: number; maxPrice?: number }>) => {
     setFiltersState(prev => ({
@@ -63,8 +68,16 @@ export const MenuProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       setLoading(true);
       setError(null);
-      
-      const actualFilters = newFilters ? { ...filters, ...newFilters, categoryIds: newFilters.categoryIds ? [...newFilters.categoryIds] : filters.categoryIds } : filters;
+
+      const currentFilters = filtersRef.current;
+      const actualFilters = newFilters
+        ? {
+            ...currentFilters,
+            ...newFilters,
+            categoryIds: newFilters.categoryIds ? [...newFilters.categoryIds] : currentFilters.categoryIds,
+          }
+        : currentFilters;
+
       const response = await restaurantApi.getDishes({
         categoryIds: actualFilters.categoryIds,
         search: actualFilters.search,
@@ -78,18 +91,17 @@ export const MenuProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setDishes((paginatedData.content || []).map(normalizeDishAvailability));
       setPagination({
         page: (paginatedData.number ?? 0) + 1,
-        limit: paginatedData.size ?? filters.limit,
+        limit: paginatedData.size ?? actualFilters.limit,
         totalItems: paginatedData.totalElements ?? 0,
         totalPages: paginatedData.totalPages ?? 1,
       });
-      setFilters(actualFilters);
     } catch (err: any) {
       setError(err.response?.data?.message || 'Failed to load dishes');
       throw err;
     } finally {
       setLoading(false);
     }
-  }, [filters]);
+  }, []);
 
   const loadCategories = useCallback(async () => {
     try {

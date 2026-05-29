@@ -61,3 +61,13 @@ apiClient.interceptors.response.use(
     }
   },
 );
+
+apiClient.interceptors.request.use((config) => {
+  if (config.data instanceof FormData) {
+    config.headers = config.headers ?? {};
+    delete (config.headers as any)['Content-Type'];
+    delete (config.headers as any)['content-type'];
+  }
+
+  return config;
+});

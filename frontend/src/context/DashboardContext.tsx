@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useCallback, useEffect } from 'react';
+import React, { createContext, useContext, useState, useCallback } from 'react';
 import { restaurantApi } from '../api/restaurant';
 import type { DashboardStats } from '../types/restaurant';
 
@@ -37,21 +37,6 @@ export const DashboardProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     setError(null);
   }, []);
 
-  // Load stats on mount and refresh every 30 seconds
-  useEffect(() => {
-    loadStats().catch(() => {
-      // Error handling is done in the callback
-    });
-
-    const interval = setInterval(() => {
-      loadStats().catch(() => {
-        // Error handling is done in the callback
-      });
-    }, 30000); // Refresh every 30 seconds
-
-    return () => clearInterval(interval);
-  }, [loadStats]);
-
   const value: DashboardContextType = {
     stats,
     loading,
@@ -61,7 +46,7 @@ export const DashboardProvider: React.FC<{ children: React.ReactNode }> = ({ chi
   };
 
   return (
-    <DashboardContext.Provider value={value}>
+      <DashboardContext.Provider value={value}>
       {children}
     </DashboardContext.Provider>
   );
