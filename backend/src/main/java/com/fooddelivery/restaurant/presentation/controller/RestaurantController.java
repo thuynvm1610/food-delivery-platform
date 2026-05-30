@@ -11,6 +11,7 @@ import com.fooddelivery.restaurant.domain.value.RestaurantStatus;
 import com.fooddelivery.restaurant.infrastructure.persistence.mapper.DashboardStatsMapper;
 import com.fooddelivery.restaurant.infrastructure.persistence.mapper.RestaurantMapper;
 import com.fooddelivery.restaurant.presentation.request.UpdateRestaurantProfileRequest;
+import com.fooddelivery.restaurant.presentation.request.UpdateRestaurantStatusRequest;
 import com.fooddelivery.restaurant.presentation.response.DashboardStatsResponse;
 import com.fooddelivery.restaurant.presentation.response.RestaurantImageResponse;
 import com.fooddelivery.restaurant.presentation.response.RestaurantProfileResponse;
@@ -81,12 +82,12 @@ public class RestaurantController {
     @PutMapping("/me/status")
     public ResponseEntity<BaseResponse<RestaurantProfileResponse>> updateStatus(
             @AuthenticationPrincipal AuthenticatedUser user,
-            @RequestParam RestaurantStatus status) {
+            @Valid @RequestBody UpdateRestaurantStatusRequest request) {
         UUID restaurantId = restaurantRepository.findByOwnerId(user.userId())
                 .orElseThrow(() -> new RuntimeException("Restaurant not found for user: " + user.userId()))
                 .getId();
 
-        RestaurantProfileOutput output = updateRestaurantStatusUseCase.execute(restaurantId, status);
+        RestaurantProfileOutput output = updateRestaurantStatusUseCase.execute(restaurantId, request.getStatus());
         RestaurantProfileResponse response = restaurantMapper.toRestaurantProfileResponse(output);
         return ResponseEntity.ok(BaseResponse.success(response));
     }

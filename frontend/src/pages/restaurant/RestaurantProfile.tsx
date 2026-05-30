@@ -73,8 +73,7 @@ export const RestaurantProfile: React.FC = () => {
       <div className="space-y-6">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <h1 className="text-3xl font-bold text-slate-900">Hồ sơ quán</h1>
-            <p className="mt-2 text-sm text-slate-500">Quản lý thông tin quán và ảnh hiển thị.</p>
+            <h1 className="text-3xl font-bold text-slate-900">Thông tin quán</h1>
           </div>
           <ActionButton
             label={restaurant?.status === 'OPEN' ? 'Đóng cửa' : 'Mở cửa'}
@@ -149,7 +148,7 @@ export const RestaurantProfile: React.FC = () => {
           <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
             <div className="space-y-2">
               <h2 className="text-xl font-semibold text-slate-900">Ảnh quán</h2>
-              <p className="text-sm text-slate-500">Tải ảnh mới để làm mới hiển thị trang cửa hàng.</p>
+              <p className="text-sm text-slate-500 mb-2">Tải ảnh mới để làm mới hiển thị trang cửa hàng.</p>
             </div>
             <ImageUploader onImagesSelected={handleImagesSelected} maxFiles={5} />
           </div>

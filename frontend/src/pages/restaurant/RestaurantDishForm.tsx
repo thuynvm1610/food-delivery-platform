@@ -189,7 +189,7 @@ export const RestaurantDishForm: React.FC = () => {
                 </div>
 
                 {/* Body */}
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 340px', gap: 16, alignItems: 'start' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 400px', gap: 16, alignItems: 'start' }}>
                     {/* Left — form */}
                     <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
                         {/* Basic info card */}
@@ -357,7 +357,6 @@ export const RestaurantDishForm: React.FC = () => {
                         )}
 
                         <ImageUploader onImagesSelected={setNewImages} maxFiles={5} />
-                        <p style={{ fontSize: 12, color: 'rgb(148, 163, 184)', margin: '10px 0 0' }}>Tối đa 5 ảnh.</p>
                     </div>
                 </div>
             </div>

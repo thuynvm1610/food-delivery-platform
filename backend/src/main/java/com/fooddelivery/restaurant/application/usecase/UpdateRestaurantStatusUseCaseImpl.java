@@ -5,6 +5,8 @@ import com.fooddelivery.restaurant.domain.aggregate.Restaurant;
 import com.fooddelivery.restaurant.domain.repository.RestaurantRepository;
 import com.fooddelivery.restaurant.domain.value.RestaurantStatus;
 import com.fooddelivery.restaurant.infrastructure.persistence.mapper.RestaurantMapper;
+import com.fooddelivery.shared.exception.DomainException;
+import com.fooddelivery.shared.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -22,9 +24,10 @@ public class UpdateRestaurantStatusUseCaseImpl implements UpdateRestaurantStatus
         Restaurant restaurant = restaurantRepository.findById(restaurantId)
                 .orElseThrow(() -> new RuntimeException("Restaurant not found"));
 
-        restaurant.setStatus(status);
-        restaurantRepository.save(restaurant);
-
-        return restaurantMapper.toRestaurantProfileOutput(restaurant);
+        if(restaurant.setStatus(status)) {
+            restaurantRepository.save(restaurant);
+            return restaurantMapper.toRestaurantProfileOutput(restaurant);
+        };
+        throw new DomainException(ErrorCode.WITHIN_OPEN_HOUR);
     }
 }

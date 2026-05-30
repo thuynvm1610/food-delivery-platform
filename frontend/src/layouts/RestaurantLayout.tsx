@@ -147,7 +147,9 @@ export const RestaurantLayout: React.FC<RestaurantLayoutProps> = ({ children }) 
                     </p>
                   )}
                   {navItems.map(({ path, label, Icon, color }) => {
-                    const isActive = location.pathname === path;
+                    const isActive =
+                      location.pathname === path ||
+                      location.pathname.startsWith(path + '/');
                     return (
                       <Link
                         key={path}
