@@ -369,11 +369,11 @@ VALUES
                 '8dde8a6d-16e4-4bee-a211-94625d05d98f',
                 N'Phở Thìn Lò Đúc',
                 N'Phở bò truyền thống Hà Nội hơn 40 năm, nổi tiếng với nước dùng trong veo và thịt bò tái xào sả ớt',
-                N'13 Lò Đúc',
-                N'TP. Hà Nội',
+                N'Phở Thìn 13 Lò Đúc, Phở Thìn 13 Lò Đúc, 13 Phố Lò Đúc, Phường Phạm Đình Hổ',
+                N'Hà Nội',
                 N'Hai Bà Trưng',
-                21.0181,
-                105.851,
+                21.0180850,
+                105.8552960,
                 NULL,
                 'OPEN',
                 '2024-01-15 06:00:00'
@@ -383,11 +383,11 @@ VALUES
                 '1156b32c-fb62-4721-931a-efd7ab467485',
                 N'Bún Chả Hương Liên',
                 N'Quán bún chả nổi tiếng nhất Hà Nội, từng đón tiếp Tổng thống Mỹ Barack Obama năm 2016',
-                N'24 Lê Văn Hưu',
-                N'TP. Hà Nội',
+                N'Bún Chả Hương Liên, Bún Chả Hương Liên, 24 Lê Văn Hưu, Phạm Đình Hổ',
+                N'Hà Nội',
                 N'Hai Bà Trưng',
-                21.0245,
-                105.8513,
+                21.0179802,
+                105.8539132,
                 NULL,
                 'OPEN',
                 '2024-01-16 06:00:00'
@@ -395,20 +395,40 @@ VALUES
         (
                 '8589221b-9ebe-430d-a475-65a1f2ef5825',
                 'd1cf8b00-a37d-4434-973e-b09f1ec05202',
-                N'Pizza Sài Gòn House',
+                N'Pizza Zio Bello',
                 N'Pizza phong cách Ý kết hợp topping đặc trưng Việt Nam, không gian trẻ trung hiện đại',
-                N'88 Hoàng Diệu 2',
-                N'TP. Hồ Chí Minh',
-                N'Thành phố Thủ Đức',
-                10.8415,
-                106.751,
+                N'Pizza Zio Bello, Pizza Zio Bello, 135 Hai Bà Trưng, Bến Nghé',
+                N'Hồ Chí Minh',
+                N'1',
+                10.7825590,
+                106.6983428,
                 NULL,
                 'OPEN',
                 '2024-01-17 08:00:00'
         );
 
 -- =========================================================================
--- 7. RESTAURANT_OPERATING_HOURS
+-- 7. RESTAURANT_IMAGES
+-- =========================================================================
+INSERT INTO restaurant_images (id, restaurant_id, image_url, display_order)
+VALUES
+    -- Phở Thìn Lò Đúc
+    ('a1000001-0000-0000-0000-000000000001', 'f09f2191-2088-4087-a52f-c181152af535', 'https://res.cloudinary.com/drity7uew/image/upload/v1780146732/phoThinLoDuc_03_cbbbko.jpg', 0),
+    ('a1000001-0000-0000-0000-000000000002', 'f09f2191-2088-4087-a52f-c181152af535', 'https://res.cloudinary.com/drity7uew/image/upload/v1780146732/phoThinLoDuc_01_cgyioy.jpg', 1),
+    ('a1000001-0000-0000-0000-000000000003', 'f09f2191-2088-4087-a52f-c181152af535', 'https://res.cloudinary.com/drity7uew/image/upload/v1780146732/phoThinLoDuc_02_ih5ios.jpg', 2),
+
+    -- Bún Chả Hương Liên
+    ('a2000002-0000-0000-0000-000000000001', '62689fdc-2062-4964-b429-e64db59d07b1', 'https://res.cloudinary.com/drity7uew/image/upload/v1780147137/bunChaHuongLien_01_m5angm.jpg', 0),
+    ('a2000002-0000-0000-0000-000000000002', '62689fdc-2062-4964-b429-e64db59d07b1', 'https://res.cloudinary.com/drity7uew/image/upload/v1780147137/bunChaHuongLien_02_jddivx.jpg', 1),
+    ('a2000002-0000-0000-0000-000000000003', '62689fdc-2062-4964-b429-e64db59d07b1', 'https://res.cloudinary.com/drity7uew/image/upload/v1780147137/bunChaHuongLien_03_y1xsig.jpg', 2),
+
+    -- Pizza Zio Bello
+    ('a3000003-0000-0000-0000-000000000001', '8589221b-9ebe-430d-a475-65a1f2ef5825', 'https://res.cloudinary.com/drity7uew/image/upload/v1780147399/pizzaZioBello_01_ybapnb.jpg', 0),
+    ('a3000003-0000-0000-0000-000000000002', '8589221b-9ebe-430d-a475-65a1f2ef5825', 'https://res.cloudinary.com/drity7uew/image/upload/v1780147399/pizzaZioBello_02_x4kmmx.jpg', 1),
+    ('a3000003-0000-0000-0000-000000000003', '8589221b-9ebe-430d-a475-65a1f2ef5825', 'https://res.cloudinary.com/drity7uew/image/upload/v1780147399/pizzaZioBello_03_xzrn03.jpg', 2);
+
+-- =========================================================================
+-- 8. RESTAURANT_OPERATING_HOURS
 -- day_of_week: 2=Thứ Hai, 3=Thứ Ba, 4=Thứ Tư, 5=Thứ Năm,
 --              6=Thứ Sáu, 7=Thứ Bảy, 8=Chủ Nhật
 -- =========================================================================
@@ -559,7 +579,7 @@ VALUES
         );
 
 -- =========================================================================
--- 8. DISH_CATEGORIES  (platform-wide)
+-- 9. DISH_CATEGORIES  (platform-wide)
 -- =========================================================================
 INSERT INTO
         dish_categories (id, name, description)
@@ -616,7 +636,7 @@ VALUES
         );
 
 -- =========================================================================
--- 9. DISHES  (6 món mỗi quán = 18 tổng)
+-- 10. DISHES  (6 món mỗi quán = 18 tổng)
 -- =========================================================================
 INSERT INTO
         dishes (
@@ -812,7 +832,7 @@ VALUES
         );
 
 -- =========================================================================
--- 10. DISH_IMAGES
+-- 11. DISH_IMAGES
 -- =========================================================================
 INSERT INTO
         dish_images (id, dish_id, image_url, display_order)
@@ -930,7 +950,7 @@ VALUES
         );
 
 -- =========================================================================
--- 10. DISH_CATEGORY_MAPPINGS
+-- 12. DISH_CATEGORY_MAPPINGS
 -- =========================================================================
 INSERT INTO
         dish_category_mappings (dish_id, category_id)
@@ -1041,7 +1061,7 @@ VALUES
         );
 
 -- =========================================================================
--- 11. VOUCHERS
+-- 13. VOUCHERS
 -- FIX: used_count đồng bộ với số lần thực sự dùng trong orders
 --   NEWUSER30K   : dùng 1 lần (008f5677)
 --   PLATFORM15PCT: dùng 3 lần (6427466c, d1a7cc5e, 0074446d)
@@ -1127,7 +1147,7 @@ VALUES
         );
 
 -- =========================================================================
--- 12. WALLETS
+-- 14. WALLETS
 -- =========================================================================
 INSERT INTO
         wallets (id, user_id, balance_amount, currency)
@@ -1176,7 +1196,7 @@ VALUES
         );
 
 -- =========================================================================
--- 13. ORDERS  (20 đơn)
+-- 15. ORDERS  (20 đơn)
 -- FIX:
 --   907c3abb: voucher PHOTHINHVIP subtotal(105k) < min(130k) → voucher_id = NULL, discount = 0
 --   f48bc76a: voucher PIZZA50K    subtotal(230k) < min(300k) → voucher_id = NULL, discount = 0
@@ -1566,7 +1586,7 @@ VALUES
         );
 
 -- =========================================================================
--- 14. ORDER_ITEMS
+-- 16. ORDER_ITEMS
 -- =========================================================================
 INSERT INTO
         order_items (
@@ -1980,7 +2000,7 @@ VALUES
         );
 
 -- =========================================================================
--- 15. ORDER_STATUS_HISTORY
+-- 17. ORDER_STATUS_HISTORY
 -- =========================================================================
 INSERT INTO
         order_status_history (id, order_id, status, note, created_at)
@@ -2995,7 +3015,7 @@ VALUES
         );
 
 -- =========================================================================
--- 16. DELIVERY_TASKS
+-- 18. DELIVERY_TASKS
 -- =========================================================================
 INSERT INTO
         delivery_tasks (
@@ -3154,7 +3174,7 @@ VALUES
         );
 
 -- =========================================================================
--- 17. DRIVER_ORDER_REQUESTS
+-- 19. DRIVER_ORDER_REQUESTS
 -- =========================================================================
 INSERT INTO
         driver_order_requests (
@@ -3448,7 +3468,7 @@ VALUES
         );
 
 -- =========================================================================
--- 18. DISH_REVIEWS  (chỉ cho CUSTOMER_CONFIRMED)
+-- 20. DISH_REVIEWS  (chỉ cho CUSTOMER_CONFIRMED)
 -- =========================================================================
 INSERT INTO
         dish_reviews (
@@ -3832,7 +3852,7 @@ VALUES
         );
 
 -- =========================================================================
--- 19. WALLET_TRANSACTIONS
+-- 21. WALLET_TRANSACTIONS
 -- =========================================================================
 INSERT INTO
         wallet_transactions (

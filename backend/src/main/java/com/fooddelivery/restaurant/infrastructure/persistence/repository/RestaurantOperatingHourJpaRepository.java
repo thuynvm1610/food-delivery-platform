@@ -8,7 +8,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 public interface RestaurantOperatingHourJpaRepository extends JpaRepository<RestaurantOperatingHourJpaEntity, UUID> {
-    List<RestaurantOperatingHourJpaEntity> findByRestaurant_Id(UUID restaurantId);
+    List<RestaurantOperatingHourJpaEntity> findByRestaurantId(UUID restaurantId);
 
-    Optional<RestaurantOperatingHourJpaEntity> findByRestaurant_IdAndDayOfWeek(UUID restaurantId, Integer dayOfWeek);
+    Optional<RestaurantOperatingHourJpaEntity> findByRestaurantIdAndDayOfWeek(UUID restaurantId, Integer dayOfWeek);
 }

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import {
   IconLayoutDashboard,
@@ -20,10 +20,65 @@ import { RestaurantProvider } from '../context/RestaurantContext';
 import { OrderProvider } from '../context/OrderContext';
 import { MenuProvider } from '../context/MenuContext';
 import { DashboardProvider } from '../context/DashboardContext';
+import type { RestaurantOperatingHour } from '../types/restaurant';
 
 interface RestaurantLayoutProps {
   children: React.ReactNode;
 }
+
+const DAY_LABELS: Record<number, string> = {
+  2: 'Thứ Hai',
+  3: 'Thứ Ba',
+  4: 'Thứ Tư',
+  5: 'Thứ Năm',
+  6: 'Thứ Sáu',
+  7: 'Thứ Bảy',
+  8: 'Chủ Nhật',
+};
+
+const getCurrentDayOfWeek = (date: Date) => {
+  const day = date.getDay();
+  return day === 0 ? 8 : day + 1;
+};
+
+const formatHour = (hour: number) => `${String(hour).padStart(2, '0')}:00`;
+
+const formatOperatingHours = (hour: RestaurantOperatingHour | undefined) => {
+  if (!hour) {
+    return 'Nghỉ cả ngày';
+  }
+
+  if (hour.openHour === hour.closeHour) {
+    return `${formatHour(hour.openHour)} - ${formatHour(hour.closeHour)}`;
+  }
+
+  const isOvernight = hour.closeHour < hour.openHour;
+  return `${formatHour(hour.openHour)} - ${formatHour(hour.closeHour)}${isOvernight ? ' (qua đêm)' : ''}`;
+};
+
+const isOpenNow = (
+  status: 'OPEN' | 'CLOSED' | undefined,
+  hour: RestaurantOperatingHour | undefined,
+  now: Date,
+) => {
+  if (status !== 'OPEN' || !hour) {
+    return false;
+  }
+
+  const currentMinutes = now.getHours() * 60 + now.getMinutes();
+  const openMinutes = hour.openHour * 60;
+  const closeMinutes = hour.closeHour * 60;
+
+  if (hour.closeHour > hour.openHour) {
+    return currentMinutes >= openMinutes && currentMinutes < closeMinutes;
+  }
+
+  if (hour.closeHour < hour.openHour) {
+    return currentMinutes >= openMinutes || currentMinutes < closeMinutes;
+  }
+
+  return false;
+};
 
 const navItems = [
   { path: '/dashboard/home', label: 'Tổng quan', Icon: IconLayoutDashboard, color: '#fb923c' },
@@ -37,13 +92,31 @@ const navItems = [
 ];
 
 const RestaurantTopBar: React.FC = () => {
-  const { restaurant } = useRestaurant();
+  const { restaurant, operatingHours, loadOperatingHours } = useRestaurant();
   const [time, setTime] = React.useState(new Date());
+  const [hoursLoaded, setHoursLoaded] = React.useState(false);
 
   React.useEffect(() => {
     const t = setInterval(() => setTime(new Date()), 60_000);
     return () => clearInterval(t);
   }, []);
+
+  React.useEffect(() => {
+    loadOperatingHours()
+      .catch(() => {})
+      .finally(() => setHoursLoaded(true));
+  }, [loadOperatingHours]);
+
+  const todayDayOfWeek = getCurrentDayOfWeek(time);
+  const todayOperatingHour = operatingHours.find(hour => hour.dayOfWeek === todayDayOfWeek);
+  const openNow = isOpenNow(restaurant?.status, todayOperatingHour, time);
+  const isSelling = restaurant?.status === 'OPEN';
+  const statusLabel = isSelling ? (openNow ? 'Trong giờ làm' : 'Ngoài giờ làm') : 'Ngừng bán';
+  const statusColor = openNow ? 'text-emerald-700' : 'text-slate-500';
+  const dotColor = openNow ? 'bg-emerald-500' : 'bg-slate-400';
+  const todayHoursLabel = isSelling && hoursLoaded
+    ? `${DAY_LABELS[todayDayOfWeek] ?? 'Hôm nay'}: ${formatOperatingHours(todayOperatingHour)}`
+    : null;
 
   return (
     <div className="flex items-center justify-between gap-3 border-b border-slate-200/80 bg-white/90 backdrop-blur-sm px-7 py-4 shadow-sm">
@@ -55,16 +128,19 @@ const RestaurantTopBar: React.FC = () => {
       </div>
 
       <div className="flex items-center gap-5">
-        <div className="flex items-center gap-2">
-          <span className={`relative flex h-2.5 w-2.5`}>
-            {restaurant?.status === 'OPEN' && (
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
-            )}
-            <span className={`relative inline-flex rounded-full h-2.5 w-2.5 ${restaurant?.status === 'OPEN' ? 'bg-emerald-500' : 'bg-slate-400'}`} />
-          </span>
-          <span className={`text-sm font-semibold ${restaurant?.status === 'OPEN' ? 'text-emerald-700' : 'text-slate-500'}`}>
-            {restaurant?.status === 'OPEN' ? 'Đang mở cửa' : 'Đã đóng cửa'}
-          </span>
+        <div className="flex flex-col items-end gap-1">
+          <div className="flex items-center gap-2">
+            <span className={`relative flex h-2.5 w-2.5`}>
+              {isSelling && openNow && (
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+              )}
+              <span className={`relative inline-flex rounded-full h-2.5 w-2.5 ${dotColor}`} />
+            </span>
+            <span className={`text-sm font-semibold ${statusColor}`}>
+              {statusLabel}
+            </span>
+          </div>
+          {todayHoursLabel && <p className="text-[11px] text-slate-400">{todayHoursLabel}</p>}
         </div>
         <div className="h-8 w-px bg-slate-200" />
         <div className="text-right">
@@ -147,7 +223,9 @@ export const RestaurantLayout: React.FC<RestaurantLayoutProps> = ({ children }) 
                     </p>
                   )}
                   {navItems.map(({ path, label, Icon, color }) => {
-                    const isActive = location.pathname === path;
+                    const isActive =
+                      location.pathname === path ||
+                      location.pathname.startsWith(path + '/');
                     return (
                       <Link
                         key={path}
@@ -236,3 +314,4 @@ export const RestaurantLayout: React.FC<RestaurantLayoutProps> = ({ children }) 
     </RestaurantProvider>
   );
 };
+

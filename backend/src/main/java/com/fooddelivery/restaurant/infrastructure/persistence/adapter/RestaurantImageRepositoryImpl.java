@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class RestaurantImageRepositoryImpl implements RestaurantImageRepository {
 
-    private final RestaurantImageJpaRepository jpaRepository;
+    private final RestaurantImageJpaRepository restaurantImageJpaRepository;
     private final RestaurantJpaRepository restaurantJpaRepository;
 
     @Override
@@ -32,7 +32,7 @@ public class RestaurantImageRepositoryImpl implements RestaurantImageRepository 
                 .orElseThrow(() -> new RuntimeException("Restaurant not found: " + image.getRestaurantId()));
         entity.setRestaurant(restaurant);
 
-        RestaurantImageJpaEntity saved = jpaRepository.save(entity);
+        RestaurantImageJpaEntity saved = restaurantImageJpaRepository.save(entity);
 
         RestaurantImage result = new RestaurantImage();
         result.setId(saved.getId());
@@ -45,7 +45,7 @@ public class RestaurantImageRepositoryImpl implements RestaurantImageRepository 
 
     @Override
     public Optional<RestaurantImage> findById(UUID id) {
-        return jpaRepository.findById(id)
+        return restaurantImageJpaRepository.findById(id)
                 .map(entity -> new RestaurantImage(
                         entity.getId(),
                         entity.getRestaurant().getId(),
@@ -56,7 +56,7 @@ public class RestaurantImageRepositoryImpl implements RestaurantImageRepository 
 
     @Override
     public List<RestaurantImage> findByRestaurantId(UUID restaurantId) {
-        return jpaRepository.findByRestaurant_Id(restaurantId).stream()
+        return restaurantImageJpaRepository.findByRestaurant_Id(restaurantId).stream()
                 .map(entity -> new RestaurantImage(
                         entity.getId(),
                         entity.getRestaurant().getId(),
@@ -68,7 +68,10 @@ public class RestaurantImageRepositoryImpl implements RestaurantImageRepository 
 
     @Override
     public void delete(RestaurantImage image) {
-        jpaRepository.deleteById(image.getId());
+        int deletedRows = restaurantImageJpaRepository.deleteByImageId(image.getId());
+        if (deletedRows == 0) {
+            throw new RuntimeException("Restaurant image not found with id: " + image.getId());
+        }
     }
 
     @Override
@@ -76,6 +79,6 @@ public class RestaurantImageRepositoryImpl implements RestaurantImageRepository 
         List<UUID> ids = images.stream()
                 .map(RestaurantImage::getId)
                 .collect(Collectors.toList());
-        jpaRepository.deleteAllById(ids);
+        restaurantImageJpaRepository.deleteAllById(ids);
     }
 }

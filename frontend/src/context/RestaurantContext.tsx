@@ -13,6 +13,7 @@ interface RestaurantContextType {
   loadRestaurantProfile: () => Promise<void>;
   updateRestaurantProfile: (data: Partial<Restaurant>) => Promise<void>;
   updateStatus: (status: 'OPEN' | 'CLOSED') => Promise<void>;
+  loadImages: () => Promise<void>;
   loadOperatingHours: () => Promise<void>;
   updateOperatingHours: (hours: Partial<RestaurantOperatingHour>[]) => Promise<void>;
   uploadImages: (formData: FormData) => Promise<void>;
@@ -69,6 +70,17 @@ export const RestaurantProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     }
   }, []);
 
+  const loadImages = useCallback(async () => {
+    try {
+      setError(null);
+      const response = await restaurantApi.getRestaurantImages();
+      setImages(response.data.data);
+    } catch (err: any) {
+      setError(err.response?.data?.message || 'Failed to load images');
+      throw err;
+    }
+  }, []);
+
   const loadOperatingHours = useCallback(async () => {
     try {
       setLoading(true);
@@ -115,12 +127,13 @@ export const RestaurantProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     try {
       setError(null);
       await restaurantApi.deleteRestaurantImage(imageId);
-      setImages(images.filter(img => img.id !== imageId));
+      const response = await restaurantApi.getRestaurantImages();
+      setImages(response.data.data);
     } catch (err: any) {
       setError(err.response?.data?.message || 'Failed to delete image');
       throw err;
     }
-  }, [images]);
+  }, []);
 
   const reorderImages = useCallback(async (imageIds: string[]) => {
     try {
@@ -142,7 +155,10 @@ export const RestaurantProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     loadRestaurantProfile().catch(() => {
       // Error handling is done in the callback
     });
-  }, [loadRestaurantProfile]);
+    loadImages().catch(() => {
+      // Error handling is done in the callback
+    });
+  }, [loadRestaurantProfile, loadImages]);
 
   const value: RestaurantContextType = {
     restaurant,
@@ -153,6 +169,7 @@ export const RestaurantProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     loadRestaurantProfile,
     updateRestaurantProfile,
     updateStatus,
+    loadImages,
     loadOperatingHours,
     updateOperatingHours,
     uploadImages,

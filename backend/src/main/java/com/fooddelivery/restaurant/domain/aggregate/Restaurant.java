@@ -81,30 +81,37 @@ public class Restaurant implements AggregateRoot<UUID> {
         this.coverImageUrl = coverImageUrl;
     }
 
-    public void setStatus(RestaurantStatus status) {
+    public boolean setStatus(RestaurantStatus status) {
+        if (status == null) {
+            return false;
+        }
+
+        if (this.status == status) {
+            return true;
+        }
+
         int currentDay = LocalDate.now().getDayOfWeek().getValue() + 1;
         LocalTime now = LocalTime.now();
 
         for (int i = operatingHours.size() - 1; i >= 0; i--) {
-
             RestaurantOperatingHour hour = operatingHours.get(i);
 
             if (currentDay == hour.getDayOfWeek()) {
-
                 LocalTime openTime = LocalTime.of(hour.getOpenHour(), 0);
                 LocalTime closeTime = LocalTime.of(hour.getCloseHour(), 0);
+                boolean isWithinOperatingHours = !now.isBefore(openTime) && now.isBefore(closeTime);
 
-                boolean isOutsideOperatingHours =
-                        now.isBefore(openTime)
-                                || !now.isBefore(closeTime);
-
-                if (isOutsideOperatingHours) {
-                    this.status = status;
+                if (status == RestaurantStatus.CLOSED && isWithinOperatingHours) {
+                    return false;
                 }
 
-                return;
+                this.status = status;
+                return true;
             }
         }
+
+        this.status = status;
+        return true;
     }
 
     public void addImage(RestaurantImage image) {
