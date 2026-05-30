@@ -6,11 +6,16 @@ import com.fooddelivery.restaurant.application.output.DashboardStatsOutput;
 import com.fooddelivery.restaurant.application.output.RestaurantImageOutput;
 import com.fooddelivery.restaurant.application.output.RestaurantProfileOutput;
 import com.fooddelivery.restaurant.application.usecase.*;
+import com.fooddelivery.restaurant.domain.entity.RestaurantImage;
 import com.fooddelivery.restaurant.domain.entity.RestaurantOperatingHour;
+import com.fooddelivery.restaurant.domain.repository.RestaurantImageRepository;
 import com.fooddelivery.restaurant.domain.repository.RestaurantRepository;
 import com.fooddelivery.restaurant.domain.repository.RestaurantOperatingHourRepository;
+import com.fooddelivery.shared.exception.DomainException;
+import com.fooddelivery.shared.exception.ErrorCode;
 import com.fooddelivery.restaurant.domain.value.RestaurantStatus;
 import com.fooddelivery.restaurant.infrastructure.persistence.mapper.DashboardStatsMapper;
+import com.fooddelivery.restaurant.infrastructure.persistence.mapper.RestaurantImageMapper;
 import com.fooddelivery.restaurant.infrastructure.persistence.mapper.RestaurantMapper;
 import com.fooddelivery.restaurant.presentation.request.UpdateRestaurantProfileRequest;
 import com.fooddelivery.restaurant.presentation.request.UpdateRestaurantOperatingHoursRequest;
@@ -41,11 +46,14 @@ public class RestaurantController {
     private final UpdateRestaurantProfileUseCase updateRestaurantProfileUseCase;
     private final UpdateRestaurantStatusUseCase updateRestaurantStatusUseCase;
     private final GetDashboardStatsUseCase getDashboardStatsUseCase;
+    private final GetRestaurantImagesUseCase getRestaurantImagesUseCase;
     private final UploadRestaurantImagesUseCase uploadRestaurantImagesUseCase;
     private final DeleteRestaurantImageUseCase deleteRestaurantImageUseCase;
     private final RestaurantRepository restaurantRepository;
+    private final RestaurantImageRepository restaurantImageRepository;
     private final RestaurantOperatingHourRepository restaurantOperatingHourRepository;
     private final RestaurantMapper restaurantMapper;
+    private final RestaurantImageMapper restaurantImageMapper;
     private final DashboardStatsMapper dashboardStatsMapper;
 
     @GetMapping("/me")
@@ -158,7 +166,22 @@ public class RestaurantController {
 
         List<RestaurantImageOutput> outputs = uploadRestaurantImagesUseCase.execute(restaurantId, images);
         List<RestaurantImageResponse> responses = outputs.stream()
-                .map(this::mapToRestaurantImageResponse)
+                .map(restaurantImageMapper::toRestaurantImageResponse)
+                .toList();
+
+        return ResponseEntity.ok(BaseResponse.success(responses));
+    }
+
+    @GetMapping("/me/images")
+    public ResponseEntity<BaseResponse<List<RestaurantImageResponse>>> getImages(
+            @AuthenticationPrincipal AuthenticatedUser user) {
+        UUID restaurantId = restaurantRepository.findByOwnerId(user.userId())
+                .orElseThrow(() -> new RuntimeException("Restaurant not found for user: " + user.userId()))
+                .getId();
+
+        List<RestaurantImageResponse> responses = getRestaurantImagesUseCase.execute(restaurantId)
+                .stream()
+                .map(restaurantImageMapper::toRestaurantImageResponse)
                 .toList();
 
         return ResponseEntity.ok(BaseResponse.success(responses));
@@ -166,7 +189,18 @@ public class RestaurantController {
 
     @DeleteMapping("/me/images/{imageId}")
     public ResponseEntity<BaseResponse<Void>> deleteImage(
+            @AuthenticationPrincipal AuthenticatedUser user,
             @PathVariable UUID imageId) {
+        UUID restaurantId = restaurantRepository.findByOwnerId(user.userId())
+                .orElseThrow(() -> new RuntimeException("Restaurant not found for user: " + user.userId()))
+                .getId();
+
+        RestaurantImage image = restaurantImageRepository.findById(imageId)
+                .orElseThrow(() -> new RuntimeException("Restaurant image not found with id: " + imageId));
+        if (!restaurantId.equals(image.getRestaurantId())) {
+            throw new DomainException(ErrorCode.FORBIDDEN, "You cannot delete an image from another restaurant");
+        }
+
         deleteRestaurantImageUseCase.execute(imageId);
         return ResponseEntity.ok(BaseResponse.success(null));
     }
@@ -178,15 +212,6 @@ public class RestaurantController {
         DashboardStatsOutput output = getDashboardStatsUseCase.execute(user.userId());
         DashboardStatsResponse response = dashboardStatsMapper.toDashboardStatsResponse(output);
         return ResponseEntity.ok(BaseResponse.success(response));
-    }
-
-    private RestaurantImageResponse mapToRestaurantImageResponse(RestaurantImageOutput output) {
-        RestaurantImageResponse response = new RestaurantImageResponse();
-        response.setId(output.getId());
-        response.setRestaurantId(output.getRestaurantId());
-        response.setImageUrl(output.getImageUrl());
-        response.setDisplayOrder(output.getDisplayOrder());
-        return response;
     }
 
     private RestaurantOperatingHourResponse mapToOperatingHourResponse(RestaurantOperatingHour hour) {
