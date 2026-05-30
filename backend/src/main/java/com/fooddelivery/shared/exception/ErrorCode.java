@@ -23,7 +23,7 @@ public enum ErrorCode {
     RESTAURANT_NOT_FOUND_BY_OWNER("RES_001", "Restaurant not found for owner"),
     ITEM_OUT_OF_STOCK("ORD_001", "Item is out of stock"),
     INSUFFICIENT_WALLET_BALANCE("WAL_001", "Driver wallet balance is insufficient"),
-    WITHIN_OPEN_HOUR("REST_002", "Không thể đóng cửa khi đang trong giờ hoạt động!");
+    WITHIN_OPEN_HOUR("REST_002", "Không thể ngừng bán khi đang trong giờ làm!");
 
     private final String code;
     private final String message;

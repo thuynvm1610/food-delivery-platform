@@ -51,7 +51,7 @@ export const RestaurantProfile: React.FC = () => {
     try {
       const newStatus = restaurant?.status === 'OPEN' ? 'CLOSED' : 'OPEN';
       await updateStatus(newStatus);
-      notifySuccess(`Cửa hàng ${newStatus === 'OPEN' ? 'đã mở' : 'đã đóng'}`);
+      notifySuccess(`Cửa hàng ${newStatus === 'OPEN' ? 'đã mở bán' : 'đã ngừng bán'}`);
     } catch (err: any) {
       notifyError(err?.response?.data?.message || 'Cập nhật thất bại');
     }
@@ -76,7 +76,7 @@ export const RestaurantProfile: React.FC = () => {
             <h1 className="text-3xl font-bold text-slate-900">Thông tin quán</h1>
           </div>
           <ActionButton
-            label={restaurant?.status === 'OPEN' ? 'Đóng cửa' : 'Mở cửa'}
+            label={restaurant?.status === 'OPEN' ? 'Ngừng bán' : 'Mở bán'}
             onClick={handleStatusToggle}
             variant={restaurant?.status === 'OPEN' ? 'danger' : 'success'}
           />

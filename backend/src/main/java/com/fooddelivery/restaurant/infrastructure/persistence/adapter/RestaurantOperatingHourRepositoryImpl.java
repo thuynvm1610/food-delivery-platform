@@ -3,6 +3,8 @@ package com.fooddelivery.restaurant.infrastructure.persistence.adapter;
 import com.fooddelivery.restaurant.domain.entity.RestaurantOperatingHour;
 import com.fooddelivery.restaurant.domain.repository.RestaurantOperatingHourRepository;
 import com.fooddelivery.restaurant.infrastructure.persistence.entity.RestaurantOperatingHourJpaEntity;
+import com.fooddelivery.restaurant.infrastructure.persistence.entity.RestaurantJpaEntity;
+import com.fooddelivery.restaurant.infrastructure.persistence.repository.RestaurantJpaRepository;
 import com.fooddelivery.restaurant.infrastructure.persistence.repository.RestaurantOperatingHourJpaRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -16,16 +18,18 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class RestaurantOperatingHourRepositoryImpl implements RestaurantOperatingHourRepository {
 
+    private final RestaurantJpaRepository restaurantJpaRepository;
     private final RestaurantOperatingHourJpaRepository jpaRepository;
 
     @Override
     public RestaurantOperatingHour save(RestaurantOperatingHour hour) {
         RestaurantOperatingHourJpaEntity entity = new RestaurantOperatingHourJpaEntity();
         entity.setId(hour.getId());
+        RestaurantJpaEntity restaurant = restaurantJpaRepository.getReferenceById(hour.getRestaurantId());
+        entity.setRestaurant(restaurant);
         entity.setDayOfWeek(hour.getDayOfWeek());
         entity.setOpenHour(hour.getOpenHour());
         entity.setCloseHour(hour.getCloseHour());
-        // Note: Restaurant relationship should be set by caller
 
         RestaurantOperatingHourJpaEntity saved = jpaRepository.save(entity);
 
@@ -53,7 +57,7 @@ public class RestaurantOperatingHourRepositoryImpl implements RestaurantOperatin
 
     @Override
     public List<RestaurantOperatingHour> findByRestaurantId(UUID restaurantId) {
-        return jpaRepository.findByRestaurant_Id(restaurantId).stream()
+        return jpaRepository.findByRestaurantId(restaurantId).stream()
                 .map(entity -> new RestaurantOperatingHour(
                         entity.getId(),
                         entity.getRestaurant().getId(),
@@ -66,7 +70,7 @@ public class RestaurantOperatingHourRepositoryImpl implements RestaurantOperatin
 
     @Override
     public Optional<RestaurantOperatingHour> findByRestaurantIdAndDayOfWeek(UUID restaurantId, Integer dayOfWeek) {
-        return jpaRepository.findByRestaurant_IdAndDayOfWeek(restaurantId, dayOfWeek)
+        return jpaRepository.findByRestaurantIdAndDayOfWeek(restaurantId, dayOfWeek)
                 .map(entity -> new RestaurantOperatingHour(
                         entity.getId(),
                         entity.getRestaurant().getId(),
