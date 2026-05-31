@@ -4,9 +4,11 @@ import com.fooddelivery.restaurant.application.output.DishImageOutput;
 import com.fooddelivery.restaurant.domain.entity.DishImage;
 import com.fooddelivery.restaurant.infrastructure.persistence.entity.DishImageJpaEntity;
 import com.fooddelivery.restaurant.presentation.response.DishImageResponse;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 @Component
+@RequiredArgsConstructor
 public class DishImageMapper {
 
     public DishImage toDomain(DishImageJpaEntity jpaEntity) {

@@ -1,8 +1,7 @@
 package com.fooddelivery.restaurant.application.usecase;
 
-import com.fooddelivery.restaurant.application.input.AddDishImageInput;
+import com.fooddelivery.restaurant.application.input.CreateDishImageInput;
 import com.fooddelivery.restaurant.application.output.DishImageOutput;
-import com.fooddelivery.restaurant.domain.aggregate.Dish;
 import com.fooddelivery.restaurant.domain.entity.DishImage;
 import com.fooddelivery.restaurant.domain.repository.DishImageRepository;
 import com.fooddelivery.restaurant.domain.repository.DishRepository;
@@ -14,14 +13,14 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
-public class AddDishImageUseCaseImpl implements AddDishImageUseCase {
+public class CreateDishImageUseCaseImpl implements CreateDishImageUseCase {
 
     private final DishRepository dishRepository;
     private final DishImageRepository dishImageRepository;
     private final DishImageMapper dishImageMapper;
 
     @Override
-    public DishImageOutput execute(UUID dishId, AddDishImageInput input) {
+    public DishImageOutput execute(UUID dishId, CreateDishImageInput input) {
         dishRepository.findById(dishId)
                 .orElseThrow(() -> new RuntimeException("Dish not found with id: " + dishId));
 

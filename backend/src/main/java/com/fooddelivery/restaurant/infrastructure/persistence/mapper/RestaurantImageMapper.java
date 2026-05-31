@@ -3,9 +3,11 @@ package com.fooddelivery.restaurant.infrastructure.persistence.mapper;
 import com.fooddelivery.restaurant.application.output.RestaurantImageOutput;
 import com.fooddelivery.restaurant.domain.entity.RestaurantImage;
 import com.fooddelivery.restaurant.presentation.response.RestaurantImageResponse;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 @Component
+@RequiredArgsConstructor
 public class RestaurantImageMapper {
 
     public RestaurantImageResponse toRestaurantImageResponse(RestaurantImageOutput output) {
