@@ -17,5 +17,4 @@ public interface RestaurantOperatingHourRepository {
 
     void delete(RestaurantOperatingHour hour);
 
-    void deleteAll(List<RestaurantOperatingHour> hours);
 }

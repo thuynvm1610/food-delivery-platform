@@ -84,12 +84,4 @@ public class RestaurantOperatingHourRepositoryImpl implements RestaurantOperatin
     public void delete(RestaurantOperatingHour hour) {
         jpaRepository.deleteById(hour.getId());
     }
-
-    @Override
-    public void deleteAll(List<RestaurantOperatingHour> hours) {
-        List<UUID> ids = hours.stream()
-                .map(RestaurantOperatingHour::getId)
-                .collect(Collectors.toList());
-        jpaRepository.deleteAllById(ids);
-    }
 }

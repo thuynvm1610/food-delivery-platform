@@ -1,7 +1,7 @@
 package com.fooddelivery.restaurant.presentation.controller;
 
 import com.fooddelivery.identity.infrastructure.security.AuthenticatedUser;
-import com.fooddelivery.restaurant.application.input.AddDishImageInput;
+import com.fooddelivery.restaurant.application.input.CreateDishImageInput;
 import com.fooddelivery.restaurant.application.input.CreateDishInput;
 import com.fooddelivery.restaurant.application.input.GetDishesInput;
 import com.fooddelivery.restaurant.application.input.UpdateDishInput;
@@ -41,7 +41,7 @@ public class DishController {
     private final UpdateDishUseCase updateDishUseCase;
     private final DeleteDishUseCase deleteDishUseCase;
     private final UpdateDishAvailabilityUseCase updateDishAvailabilityUseCase;
-    private final AddDishImageUseCase addDishImageUseCase;
+    private final CreateDishImageUseCase addDishImageUseCase;
     private final UploadDishImagesUseCase uploadDishImagesUseCase;
     private final DeleteDishImageUseCase deleteDishImageUseCase;
 
@@ -166,9 +166,9 @@ public class DishController {
     @PostMapping(value = "/me/dishes/{id}/images", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<BaseResponse<DishImageResponse>> addDishImage(
             @PathVariable UUID id,
-            @Valid @RequestBody AddDishImageRequest request) {
+            @Valid @RequestBody CreateDishImageRequest request) {
         
-        AddDishImageInput input = new AddDishImageInput();
+        CreateDishImageInput input = new CreateDishImageInput();
         input.setImageUrl(request.getImageUrl());
         input.setDisplayOrder(request.getDisplayOrder());
 

@@ -1,9 +1,10 @@
-package com.fooddelivery.restaurant.infrastructure.persistence.repository;
+package com.fooddelivery.restaurant.infrastructure.persistence.adapter;
 
 import com.fooddelivery.restaurant.domain.aggregate.DishCategory;
 import com.fooddelivery.restaurant.domain.repository.DishCategoryRepository;
 import com.fooddelivery.restaurant.infrastructure.persistence.entity.DishCategoryJpaEntity;
 import com.fooddelivery.restaurant.infrastructure.persistence.mapper.DishCategoryMapper;
+import com.fooddelivery.restaurant.infrastructure.persistence.repository.DishCategoryJpaRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 

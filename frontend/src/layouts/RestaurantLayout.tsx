@@ -48,6 +48,10 @@ const formatOperatingHours = (hour: RestaurantOperatingHour | undefined) => {
     return 'Nghỉ cả ngày';
   }
 
+  if (hour.openHour === 0 && hour.closeHour === 0) {
+    return 'Nghỉ cả ngày';
+  }
+
   if (hour.openHour === hour.closeHour) {
     return `${formatHour(hour.openHour)} - ${formatHour(hour.closeHour)}`;
   }

@@ -4,12 +4,14 @@ import com.fooddelivery.restaurant.application.output.DishCategoryOutput;
 import com.fooddelivery.restaurant.domain.aggregate.DishCategory;
 import com.fooddelivery.restaurant.infrastructure.persistence.entity.DishCategoryJpaEntity;
 import com.fooddelivery.restaurant.presentation.response.DishCategoryResponse;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Component
+@RequiredArgsConstructor
 public class DishCategoryMapper {
 
     public DishCategory toDomain(DishCategoryJpaEntity entity) {
@@ -53,6 +55,14 @@ public class DishCategoryMapper {
     }
 
     public DishCategoryResponse mapToDishCategoryResponse(DishCategoryOutput output) {
+        DishCategoryResponse response = new DishCategoryResponse();
+        response.setId(output.getId());
+        response.setName(output.getName());
+        response.setDescription(output.getDescription());
+        return response;
+    }
+
+    public DishCategoryResponse toResponse(DishCategoryOutput output) {
         DishCategoryResponse response = new DishCategoryResponse();
         response.setId(output.getId());
         response.setName(output.getName());

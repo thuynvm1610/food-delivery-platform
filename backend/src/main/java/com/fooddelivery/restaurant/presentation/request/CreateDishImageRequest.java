@@ -4,7 +4,7 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
 @Data
-public class AddDishImageRequest {
+public class CreateDishImageRequest {
     @NotBlank(message = "Image URL is required")
     private String imageUrl;
 

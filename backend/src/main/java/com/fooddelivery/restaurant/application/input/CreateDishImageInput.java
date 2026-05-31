@@ -3,7 +3,7 @@ package com.fooddelivery.restaurant.application.input;
 import lombok.Data;
 
 @Data
-public class AddDishImageInput {
+public class CreateDishImageInput {
     private String imageUrl;
     private Integer displayOrder;
 }

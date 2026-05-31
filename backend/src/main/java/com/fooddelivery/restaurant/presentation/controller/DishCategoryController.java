@@ -2,6 +2,7 @@ package com.fooddelivery.restaurant.presentation.controller;
 
 import com.fooddelivery.restaurant.application.output.DishCategoryOutput;
 import com.fooddelivery.restaurant.application.usecase.GetDishCategoriesUseCase;
+import com.fooddelivery.restaurant.infrastructure.persistence.mapper.DishCategoryMapper;
 import com.fooddelivery.restaurant.presentation.response.DishCategoryResponse;
 import com.fooddelivery.shared.web.BaseResponse;
 import lombok.RequiredArgsConstructor;
@@ -19,23 +20,16 @@ import java.util.stream.Collectors;
 public class DishCategoryController {
 
     private final GetDishCategoriesUseCase getDishCategoriesUseCase;
+    private final DishCategoryMapper dishCategoryMapper;
 
     @GetMapping("/dish-categories")
     public ResponseEntity<BaseResponse<List<DishCategoryResponse>>> getDishCategories() {
         List<DishCategoryOutput> outputs = getDishCategoriesUseCase.execute();
 
         List<DishCategoryResponse> responses = outputs.stream()
-                .map(this::toResponse)
+                .map(dishCategoryMapper::toResponse)
                 .collect(Collectors.toList());
 
         return ResponseEntity.ok(BaseResponse.success(responses));
-    }
-
-    private DishCategoryResponse toResponse(DishCategoryOutput output) {
-        DishCategoryResponse response = new DishCategoryResponse();
-        response.setId(output.getId());
-        response.setName(output.getName());
-        response.setDescription(output.getDescription());
-        return response;
     }
 }
